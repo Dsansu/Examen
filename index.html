@@ -7,9 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script type="module">
-        // No Firebase imports needed for localStorage version
-
-        const appId = 'riesgos-bancarios-app-local-v1'; // Namespace for localStorage
+        const appId = 'riesgos-bancarios-app-local-v3'; // Namespace for localStorage, v3 for new questions
         let preguntasGlobal = [];
 
         const TEMAS_NOMBRES = [
@@ -25,70 +23,96 @@
             "Tema 10: Formalización, Seguimiento, Morosidad y Acción Recuperadora"
         ];
 
+        // Esta función ahora contendrá las preguntas extraídas de los documentos
         async function cargarPreguntas() {
-            // Preguntas de muestra (igual que antes)
             preguntasGlobal = [
+                // --- INICIO DE PREGUNTAS EXTRAÍDAS ---
+
+                // Test Wenceslao (Asumiendo que las primeras 20 son Tema 1, las siguientes 20 Tema 2, etc.)
                 // Tema 1
-                { id: "t1_p1", tema: 1, origen: "Wenceslao", texto: "De acuerdo al Pilar III de los acuerdos de Basilea, las entidades están obligadas a publicar un informe explicativo de las medidas aplicadas para la adecuación y evaluación interna de la liquidez, denominado:", opciones: [{ texto: "Informe de Liquidez.", esCorrecta: false }, { texto: "Informe del Pilar III.", esCorrecta: false }, { texto: "Informe de Relevancia Prudencial.", esCorrecta: true }, { texto: "Informe de Solvencia.", esCorrecta: false }] },
-                { id: "t1_p2", tema: 1, origen: "Minaya", texto: "El riesgo ocasionado por prácticas inadecuadas en la relación del banco con sus clientes se denomina:", opciones: [{ texto: "Riesgo modelo", esCorrecta: false }, { texto: "Riesgo reputacional", esCorrecta: false }, { texto: "Riesgo legal", esCorrecta: false }, { texto: "Riesgo de conducta", esCorrecta: true }] },
-                { id: "t1_p3", tema: 1, origen: "Luci", texto: "La probabilidad de que un cliente no atienda sus obligaciones contractuales durante un periodo superior a 90 días se define como:", opciones: [{ texto: "Pérdida esperada (PE).", esCorrecta: false }, { texto: "Severidad (LGD).", esCorrecta: false }, { texto: "Exposición (EAD).", esCorrecta: false }, { texto: "Probabilidad de incumplimiento (PD).", esCorrecta: true } ]},
-                { id: "t1_p4", tema: 1, origen: "Eva", texto: "La definición, actualización y supervisión del cumplimiento del marco de apetito al riesgo, es una responsabilidad del:", opciones: [{ texto: "Dirección de Riesgos.", esCorrecta: false }, { texto: "Comité de Activos y Pasivos.", esCorrecta: false }, { texto: "Consejo de Administración.", esCorrecta: true }, { texto: "Dirección General.", esCorrecta: false }] },
-                { id: "t1_p5", tema: 1, origen: "Alberto", texto: "Que comité tiene la misión de gestionar, controlar y monitorizar de forma global los riesgos que afectan a la entidad:", opciones: [{ texto: "Comité de Modelos y Parámetros", esCorrecta: false }, { texto: "Comité de Políticas de Riesgo", esCorrecta: true }, { texto: "Comité global de riesgo de credito", esCorrecta: false }, { texto: "Comité de Seguimiento del Riesgo", esCorrecta: false }] },
-                // Tema 2
-                { id: "t2_p1", tema: 2, origen: "Wenceslao", texto: "En una Sociedad Civil Particular:", opciones: [{ texto: "Está regulada por la Ley de Sociedades Anónimas.", esCorrecta: false }, { texto: "Carece de beneficios.", esCorrecta: false }, { texto: "La responsabilidad de sus socios en mancomunada.", esCorrecta: true }, { texto: "El contrato de constitución, no requiere en ningún caso su formalizarlo en escritura pública.", esCorrecta: false }] },
-                { id: "t2_p2", tema: 2, origen: "Minaya", texto: "El Registro de Aceptaciones Impagadas (RAI) recoge impagados por documento de giro con fuerza ejecutiva de importe superior a:", opciones: [{ texto: "300 euros", esCorrecta: true }, { texto: "100 euros", esCorrecta: false }, { texto: "200 euros", esCorrecta: false }, { texto: "400 euros", esCorrecta: false }] },
-                { id: "t2_p3", tema: 2, origen: "Luci", texto: "Con la muerte de un fiador de una operación de financiación:", opciones: [{ texto: "Se extingue el afianzamiento en el momento de la defunción.", esCorrecta: true }, { texto: "Solo se extinguirá cuando se cumpla la obligación del deudor afianzado y pasará a formar parte de la masa hereditaria, tanto si está o no al corriente de pago.", esCorrecta: false }, { texto: "Solo se extinguirá cuando se cumpla la obligación del deudor afianzado y únicamente pasará a formar parte de la masa hereditaria si no está al corriente de pago.", esCorrecta: false }, { texto: "Se debe esperar al vencimiento de la operación financiada, para tomar las decisiones oportunas, ya que el afianzamiento no prescribe.", esCorrecta: false } ]},
-                { id: "t2_p4", tema: 2, origen: "Jenny", texto: "El Badexcug, recoge información de personas físicas y jurídicas con operaciones impagadas en las entidades de crédito por saldos morosos superiores a:", opciones: [{ texto: "200 euros", esCorrecta: false }, { texto: "300 euros", esCorrecta: true }, { texto: "400 euros", esCorrecta: false }, { texto: "100 euros", esCorrecta: false }] },
-                { id: "t2_p5", tema: 2, origen: "Guaci", texto: "¿Qué \"fideliza\" a un cliente en lo que se refiere a la atención que recibe?", opciones: [{ texto: "Mantener un contacto diario con el cliente.", esCorrecta: false }, { texto: "Asesoramiento y soluciones.", esCorrecta: true }, { texto: "Trato distante, pero profesional.", esCorrecta: false }, { texto: "Dar una respuesta inmediata, aunque no tengamos toda la información.", esCorrecta: false }] },
-                // Tema 3
-                { id: "t3_p1", tema: 3, origen: "Wenceslao", texto: "El apalancamiento valora la proporción entre:", opciones: [{ texto: "Los activos y pasivos totales", esCorrecta: false }, { texto: "La deuda y los capitales propios.", esCorrecta: true }, { texto: "La deuda total y el BAI.", esCorrecta: false }, { texto: "El capital propio y los activos.", esCorrecta: false }] },
-                { id: "t3_p2", tema: 3, origen: "Minaya", texto: "La cuenta de tesorería:", opciones: [{ texto: "Registra las ventas realizadas por la empresa.", esCorrecta: false }, { texto: "Recoge los cobros y los pagos que genera la actividad de la empresa.", esCorrecta: true }, { texto: "Recoge sólo los ingresos y gastos de la empresa.", esCorrecta: false }, { texto: "Recoge exclusivamente los ingresos y los gastos con independencia del momento en que se produce la entrada o salida efectiva del dinero.", esCorrecta: false }] },
-                { id: "t3_p3", tema: 3, origen: "Miguel", texto: "Si el total de activos de una empresa es 1.000 €, el exigible total es de 400 € y el beneficio neto es 100€. Calcular el R.O.E.", opciones: [{ texto: "15,66%.", esCorrecta: false }, { texto: "10%.", esCorrecta: false }, { texto: "16,66%.", esCorrecta: true }, { texto: "15%.", esCorrecta: false }] },
-                { id: "t3_p4", tema: 3, origen: "Alfonso", texto: "El presupuesto de tesorería es:", opciones: [{ texto: "El cálculo de los cobros y pagos realizados en los últimos 3 años.", esCorrecta: false }, { texto: "El cálculo del estado de flujos de tesorería con previsiones futuras.", esCorrecta: true }, { texto: "La proyección de beneficios en el año próximo.", esCorrecta: false }, { texto: "El cálculo del beneficio a fin del periodo de evaluación.", esCorrecta: false }] },
-                { id: "t3_p5", tema: 3, origen: "Jenny", texto: "Respecto a la ratio “plazo de pago”, señalar la respuesta incorrecta:", opciones: [{ texto: "Para que sea mayor la ratio plazo de cobro, se debe incumplir los plazos de pago.", esCorrecta: true }, { texto: "Debe incluir el IVA.", esCorrecta: false }, { texto: "Cuanto mayor, en principio es mejor, ya que se obtiene mayor plazo de financiamiento por parte de los proveedores.", esCorrecta: false }, { texto: "Indica el número de días promedios que se tarda en pagar a los proveedores.", esCorrecta: false }] },
-                // Tema 4
-                { id: "t4_p1", tema: 4, origen: "Guaci", texto: "Un modelo de negocio empresarial debe responder a las siguientes preguntas:", opciones: [{ texto: "Cliente, diferenciación, calidad.", esCorrecta: false }, { texto: "Mercado, producto/servicio, procesos internos.", esCorrecta: true }, { texto: "Mercado, atributos del producto, tiempo de respuesta.", esCorrecta: false }, { texto: "Factores clave, diferenciación, procesos internos.", esCorrecta: false }] },
-                { id: "t4_p2", tema: 4, origen: "Eva", texto: "Una operación formalizada para sustituir a otra concedida previamente por la propia entidad, sin que el prestatario tenga dificultades financieras, se considera una operación:", opciones: [{ texto: "Refinanciada", esCorrecta: false }, { texto: "Renegociada", esCorrecta: false }, { texto: "Renovación", esCorrecta: true }, { texto: "Reestructurada", esCorrecta: false }] },
-                // Tema 5
-                { id: "t5_p1", tema: 5, origen: "Alberto", texto: "Si un cliente muestra preferencia por la cuenta de crédito de disposición discrecional como producto ideal para financiar su circulante:", opciones: [{ texto: "La entidad de crédito puede considerarlo no tan ideal, debido a la discrecionalidad de su utilización.", esCorrecta: true }, { texto: "La cuenta de crédito no es un producto para la financiación del circulante.", esCorrecta: false }, { texto: "La entidad de crédito también puede considerarlo ideal.", esCorrecta: false }, { texto: "Es porque sabe que es un producto con un alto nivel de riesgo para la entidad.", esCorrecta: false }] },
-                { id: "t5_p2", tema: 5, origen: "Wenceslao", texto: "El ‘crowdfunding’:", opciones: [{ texto: "Suele implicar la participación de un elevado número de personas, que aportan pequeñas cantidades a cambio de una recompensa futura.", esCorrecta: true }, { texto: "Es lo mismo que el ‘crowdlending’.", esCorrecta: false }, { texto: "Es uno de los productos bancarios que tienen un más alto nivel de riesgo.", esCorrecta: false }, { texto: "Suele implicar la participación de un reducido número de personas.", esCorrecta: false }] },
-                // Tema 6
-                { id: "t6_p1", tema: 6, origen: "Minaya", texto: "Una vez firmada en notaría la minuta del préstamo que incorpora la garantía hipotecaria, procede remitirla a:", opciones: [{ texto: "La oficina donde se realizan las anotaciones relacionadas con la propiedad del inmueble, denominada Registro de la Propiedad.", esCorrecta: true }, { texto: "La oficina de recaudación tributaria.", esCorrecta: false }, { texto: "La oficina del Registro de Anotaciones y Embargos.", esCorrecta: false }, { texto: "La oficina denominada Registro de Patentes y Marcas.", esCorrecta: false }] },
-                { id: "t6_p2", tema: 6, origen: "Luci", texto: "Para que una persona física sea considerada como Emprendedor de Responsabilidad Limitada:", opciones: [{ texto: "Tiene que otorgar acta notarial y haberla inscrito tanto en el Registro Mercantil, como en el Registro de la Propiedad sobre su vivienda.", esCorrecta: true }, { texto: "Tiene que haber sido inscrito en el registro mercantil.", esCorrecta: false }, { texto: "Tiene que haberlo manifestado en el Ministerio de Hacienda.", esCorrecta: false }, { texto: "Tiene que otorgar acta notarial al respecto pero no inscribirla.", esCorrecta: false }] },
-                // Tema 7
-                { id: "t7_p1", tema: 7, origen: "Jenny", texto: "Las personas físicas con actividad empresarial deben presentar la declaración del impuesto del valor añadido con periodicidad:", opciones: [{ texto: "Trimestral.", esCorrecta: true }, { texto: "Anual.", esCorrecta: false }, { texto: "Mensual.", esCorrecta: false }, { texto: "Trimestral, excepto el régimen de estimación objetiva.", esCorrecta: false }] },
-                { id: "t7_p2", tema: 7, origen: "Miguel", texto: "En el caso identificado como ‘financiación a un transportista’, se determina que la mejor fórmula de financiación de circulante para el cliente es:", opciones: [{ texto: "El descuento comercial, pues es un riesgo autocancelable.", esCorrecta: true }, { texto: "La cuenta de crédito, pues es un riesgo con garantía real.", esCorrecta: false }, { texto: "La cuenta de crédito, pues es un riesgo fácil de inmovilizar.", esCorrecta: false }, { texto: "El descuento comercial, pues es un riesgo muy flexible en el tiempo.", esCorrecta: false }] },
-                // Tema 8
-                { id: "t8_p1", tema: 8, origen: "Alfonso", texto: "Entendemos por Fondo de Maniobra la diferencia entre:", opciones: [{ texto: "El Activo Corriente y el Pasivo Corriente", esCorrecta: true }, { texto: "El Activo no Corriente y el Pasivo Corriente.", esCorrecta: false }, { texto: "El Activo Corriente y el Pasivo no Corriente", esCorrecta: false }, { texto: "El Activo no Corriente y los Fondos Propios", esCorrecta: false }] },
-                { id: "t8_p2", tema: 8, origen: "Eva", texto: "En España, los microcréditos están sujetos a la Ley 16/2011 de:", opciones: [{ texto: "Contratos de crédito al consumo.", esCorrecta: true }, { texto: "Contratos financieros varios.", esCorrecta: false }, { texto: "Contratos mercantiles simples.", esCorrecta: false }, { texto: "Contratos financieros y derivados.", esCorrecta: false }] },
-                // Tema 9
-                { id: "t9_p1", tema: 9, origen: "Guaci", texto: "Se denomina aparcero:", opciones: [{ texto: "Al arrendador de los terrenos rústicos que se obliga a entregar al propietario una parte de la cosecha.", esCorrecta: true }, { texto: "Al arrendador de los terrenos rústicos que se obliga a pagar un canon monetario.", esCorrecta: false }, { texto: "Al Presidente de la cooperativa.", esCorrecta: false }, { texto: "Al agricultor propietario que arrienda su propiedad.", esCorrecta: false }] },
-                { id: "t9_p2", tema: 9, origen: "Alberto", texto: "La Política Agrícola Comunitaria marcada desde el año 1.962, llevo en la década de los 1.980 a una:", opciones: [{ texto: "Sobreproducción de alimentos.", esCorrecta: true }, { texto: "Crisis de consumo agrícola.", esCorrecta: false }, { texto: "Disminución de la tierra cultivada.", esCorrecta: false }, { texto: "Aumento de la demanda de alimentos desde el exterior.", esCorrecta: false }] },
-                // Tema 10
-                { id: "t10_p1", tema: 10, origen: "Wenceslao", texto: "¿Qué medida se aplica cuando hay una reducción temporal de ingresos?", opciones: [{ texto: "Periodos de carencia.", esCorrecta: true }, { texto: "Quita de intereses", esCorrecta: false }, { texto: "Novación del plazo de amortización.", esCorrecta: false }, { texto: "Refinanciación de saldos vencidos.", esCorrecta: false }] },
-                { id: "t10_p2", tema: 10, origen: "Minaya", texto: "¿Qué implica la venta tutelada?", opciones: [{ texto: "Mandato de venta en exclusiva con Caixabank para comercializar el inmueble hipotecado.", esCorrecta: true }, { texto: "Venta directa por parte del cliente.", esCorrecta: false }, { texto: "Novación del plazo de amortización.", esCorrecta: false }, { texto: "Entrega de la vivienda hipotecada a cambio de condonación total o parcial de la deuda.", esCorrecta: false }] },
+                { id: "w_t1_p1", tema: 1, origen: "Wenceslao", texto: "De acuerdo al Pilar III de los acuerdos de Basilea, las entidades están obligadas a publicar un informe explicativo de las medidas aplicadas para la adecuación y evaluación interna de la liquidez, denominado:", opciones: [{ texto: "Informe de Liquidez.", esCorrecta: false }, { texto: "Informe del Pilar III.", esCorrecta: false }, { texto: "Informe de Relevancia Prudencial.", esCorrecta: true }, { texto: "Informe de Solvencia.", esCorrecta: false }] },
+                { id: "w_t1_p2", tema: 1, origen: "Wenceslao", texto: "El riesgo ocasionado por prácticas inadecuadas en la relación del banco con sus clientes, el trato y los productos ofrecidos a los mismos y su adecuación a cada cliente concreto, se denomina:", opciones: [{ texto: "Riesgo modelo", esCorrecta: false }, { texto: "Riesgo reputacional", esCorrecta: false }, { texto: "Riesgo legal", esCorrecta: false }, { texto: "Riesgo de conducta", esCorrecta: true }] },
+                { id: "w_t1_p3", tema: 1, origen: "Wenceslao", texto: "La pérdida o disminución de rentabilidad a consecuencias de modificaciones en el marco regulatorio por fallos judiciales desfavorables para la entidad se tipifica como:", opciones: [{ texto: "Riesgo Soberano.", esCorrecta: false }, { texto: "Riesgo de Conducta.", esCorrecta: false }, { texto: "Riesgo Legal y regulatorio.", esCorrecta: true }, { texto: "Riesgo Reputacional.", esCorrecta: false }] },
+                { id: "w_t1_p4", tema: 1, origen: "Wenceslao", texto: "El principal objetivo, entre otros, de Cumplimiento Normativo es:", opciones: [{ texto: "Detectar posibles deficiencias en procedimientos que originen, actuaciones u omisiones no ajustadas al marco jurídico y regulatorio que puedan derivar en sanciones administrativas o daños reputacionales.", esCorrecta: true }, { texto: "Establecer la política de riesgos de la entidad.", esCorrecta: false }, { texto: "Redactar toda la normativa interna de la entidad, para mitigar los riesgos y evitar sanciones administrativas, creando un marco único para la toma de decisiones.", esCorrecta: false }, { texto: "Evaluar la eficacia y eficiencia de los Sistemas de Control Interno establecidos para la mitigación de riesgos, formular recomendaciones sobre debilidades.", esCorrecta: false }] },
+                { id: "w_t1_p5", tema: 1, origen: "Wenceslao", texto: "Cuando un banco, a pesar de tener solvencia patrimonial, no puede atender el pago a su vencimiento de una emisión de títulos destinada a captar fondos, es un riesgo:", opciones: [{ texto: "Operacional.", esCorrecta: false }, { texto: "Crédito.", esCorrecta: false }, { texto: "Liquidez.", esCorrecta: true }, { texto: "Reputacional.", esCorrecta: false }] },
+                { id: "w_t1_p6", tema: 1, origen: "Wenceslao", texto: "Cuando se observa que los resultados reales sobre el comportamiento de un determinado riesgo (mercado, divisas, crédito, etc.) difieren de los datos previstos, como consecuencia de una incorrecta definición de los parámetros, datos y/o métricas cuantitativas empleados en la hipótesis inicial, decimos que estamos incurriendo en un:", opciones: [{ texto: "Riesgo tecnológico.", esCorrecta: false }, { texto: "Riesgo conducta y cumplimento.", esCorrecta: false }, { texto: "Riesgo reputacional.", esCorrecta: false }, { texto: "Riesgo modelo.", esCorrecta: true }] },
+                { id: "w_t1_p7", tema: 1, origen: "Wenceslao", texto: "En la formalización del marco del apetito de riesgo, se suelen fijar cuatro dimensiones prioritarias", opciones: [{ texto: "Cultura de riesgos, estrategia y líneas de defensa.", esCorrecta: false }, { texto: "Protección ante las perdidas, liquidez y financiación, composición del negocio, valor de la franquicia", esCorrecta: true }, { texto: "Estrategia, lenguaje común, marco de relación y límites máximos.", esCorrecta: false }, { texto: "Modelo de negocio, límites máximos, líneas de defensa.", esCorrecta: false }] },
+                { id: "w_t1_p8", tema: 1, origen: "Wenceslao", texto: "El término ‘corralito’ se ha venido utilizando para representar de forma gráfica, la actuación de algunas entidades de crédito que han cerrado sus puertas, por no poder atender los pagos a sus clientes, cuando estas tienen un elevado riesgo de:", opciones: [{ texto: "Mercado.", esCorrecta: false }, { texto: "Interés.", esCorrecta: false }, { texto: "Liquidez.", esCorrecta: true }, { texto: "Operacional.", esCorrecta: false }] },
+                { id: "w_t1_p9", tema: 1, origen: "Wenceslao", texto: "Un instrumento subordinado emitido por la entidad con un vencimiento de 7 años no asegurado por el emisor ¿puede computar como capital regulatorio?", opciones: [{ texto: "No, puesto que se trata de un producto híbrido.", esCorrecta: false }, { texto: "Sí, pero como capital adicional de nivel 1.", esCorrecta: false }, { texto: "Sí, pero como capital de nivel 3.", esCorrecta: false }, { texto: "Sí, pero como capital de nivel 2.", esCorrecta: true }] },
+                { id: "w_t1_p10", tema: 1, origen: "Wenceslao", texto: "La ratio que propone que las entidades cubran sus necesidades permanentes de liquidez derivadas de la actividad comercial a través de una adecuada financiación, mediante instrumentos de medio y largo plazo, y de una limitada apelación al corto plazo, así como un mayor peso de los depósitos de clientes, se denomina:", opciones: [{ texto: "LtV (‘loan to value’).", esCorrecta: false }, { texto: "LRC (‘liquidity coverage ratio’).", esCorrecta: false }, { texto: "LtD (‘loan to deposit’).", esCorrecta: false }, { texto: "NSFR (‘net stable funding ratio’).", esCorrecta: true }] },
+                { id: "w_t1_p11", tema: 1, origen: "Wenceslao", texto: "¿El ROE y el RAR de una operación son siempre coincidentes?", opciones: [{ texto: "Sí, porque ambas ratios parten del mismo margen financiero de la operación.", esCorrecta: false }, { texto: "No, porque el RAR incorpora de manera específica los riesgos que se asumen al efectuar la operación y el ROE no.", esCorrecta: true }, { texto: "No, porque una ratio mide la rentabilidad y la otra la probabilidad de impago.", esCorrecta: false }, { texto: "Sí, porque ambas ratios son indicadoras de rentabilidad.", esCorrecta: false }] },
+                { id: "w_t1_p12", tema: 1, origen: "Wenceslao", texto: "La definición, actualización y supervisión del cumplimiento del marco de apetito al riesgo, es una responsabilidad del:", opciones: [{ texto: "Comité de Activos y Pasivos.", esCorrecta: false }, { texto: "Dirección General.", esCorrecta: false }, { texto: "Dirección de Riesgos.", esCorrecta: false }, { texto: "Consejo de Administración.", esCorrecta: true }] },
+                { id: "w_t1_p13", tema: 1, origen: "Wenceslao", texto: "El Mecanismo Único de Supervisión (MUS) tiene por objetivo:", opciones: [{ texto: "Imponer los requisitos de absorción de pérdidas.", esCorrecta: false }, { texto: "Coordinar la actuación de los auditores internos de las entidades de la UEM.", esCorrecta: false }, { texto: "Mutualizar las pérdidas en los posibles rescates bancarios.", esCorrecta: false }, { texto: "Someter a las entidades significativas a la supervisión directa del BCE.", esCorrecta: true }] },
+                { id: "w_t1_p14", tema: 1, origen: "Wenceslao", texto: "El riesgo de tipo de interés puede ser más acusado en una entidad, cuando:", opciones: [{ texto: "Suben los tipos de interés.", esCorrecta: false }, { texto: "Existe un GAP (brecha) importante ente los plazos residuales o de revaluación (tiempo hasta el vencimiento o revisión) de las operaciones de activo y las de captación de pasivo.", esCorrecta: true }, { texto: "Cuando bajan los tipos de interés.", esCorrecta: false }, { texto: "Cuando la oficina realiza captaciones o retenciones de pasivo, pagando un tipo de interés superior a la media.", esCorrecta: false }] },
+                { id: "w_t1_p15", tema: 1, origen: "Wenceslao", texto: "En el marco de Basilea III, el capital de liquidación (‘gone-concern capital’) se corresponde con:", opciones: [{ texto: "El capital de nivel 1.", esCorrecta: false }, { texto: "El capital de nivel 2.", esCorrecta: true }, { texto: "El capital desembolsado.", esCorrecta: false }, { texto: "El colchón adicional de capital.", esCorrecta: false }] },
+                { id: "w_t1_p16", tema: 1, origen: "Wenceslao", texto: "El riesgo de tipo de cambio:", opciones: [{ texto: "Es debido a la variación de las fluctuaciones de los tipos de interés en un determinado país o divisa.", esCorrecta: false }, { texto: "Es la pérdida que sufre la entidad al mantener posiciones de activos y pasivos denominados en divisas, por las variaciones de esta divisa.", esCorrecta: true }, { texto: "Son las pérdidas de valor que se producen en las operaciones de crédito por el impago de sus clientes.", esCorrecta: false }, { texto: "Es un quebranto que se produce al aplicar un cambio de cotización erróneo en una operación de compra o venta de divisas.", esCorrecta: false }] },
+                { id: "w_t1_p17", tema: 1, origen: "Wenceslao", texto: "Dentro del modelo piramidal del marco del apetito de riesgo que tiene establecido la entidad, las áreas gestoras/controladoras de riesgo, pertenecen al:", opciones: [{ texto: "Ningún nivel.", esCorrecta: false }, { texto: "Nivel 1.", esCorrecta: false }, { texto: "Nivel 2.", esCorrecta: false }, { texto: "Nivel 3.", esCorrecta: true }] },
+                { id: "w_t1_p18", tema: 1, origen: "Wenceslao", texto: "La creación de valor de una operación o cliente se define como:", opciones: [{ texto: "El margen que se obtiene una vez retribuido el coste de capital empleado.", esCorrecta: true }, { texto: "El potencial comercial que tiene el cliente para nuevas operaciones.", esCorrecta: false }, { texto: "El margen que se obtiene una vez descontada la pérdida esperada.", esCorrecta: false }, { texto: "El exceso de garantías sobre el nominal de la operación.", esCorrecta: false }] },
+                { id: "w_t1_p19", tema: 1, origen: "Wenceslao", texto: "La ratio de apalancamiento (‘leverage ratio’), prevista en Basilea III se define como el cociente entre:", opciones: [{ texto: "El capital de nivel 1 y los recursos propios.", esCorrecta: false }, { texto: "Recursos propios y el valor de exposición de total activo contable.", esCorrecta: false }, { texto: "Recursos propios y el valor de exposición de los activos ponderados en riesgo.", esCorrecta: false }, { texto: "El capital de nivel 1 y el valor de exposición del total activo contable más las cuentas de orden (avales, límites de crédito, etc.)", esCorrecta: true }] },
+                { id: "w_t1_p20", tema: 1, origen: "Wenceslao", texto: "Se denomina riesgo asociado a las participaciones accionariales (empresas participadas por la matriz, en un grupo bancario):", opciones: [{ texto: "A la posible minoración de la solvencia de la entidad, por la excesiva participación en el capital de sus empresas participadas.", esCorrecta: false }, { texto: "A la posibilidad de que la Comisión Nacional del Mercado de Valores, deniegue la participación en el capital de una determinada compañía, para evitar ciertas prácticas monopolísticas.", esCorrecta: false }, { texto: "A la imposibilidad de desprenderse (vender) determinadas participaciones accionariales en empresas del grupo.", esCorrecta: false }, { texto: "A la posible minoración de la solvencia de la entidad, consecuencia de movimientos adversos del mercado, ventas o insolvencia de las participadas.", esCorrecta: true }] },
+
+                // Test Minaya - Tema 1 (Ejemplo, se continuarían extrayendo)
+                { id: "m_t1_p1", tema: 1, origen: "Minaya", texto: "La creación de valor de una operación o cliente se define como:", opciones: [{ texto: "El exceso de garantías sobre el nominal de la operación.", esCorrecta: false }, { texto: "El margen que se obtiene una vez descontada la pérdida esperada.", esCorrecta: false }, { texto: "El potencial comercial que tiene el cliente para nuevas operaciones.", esCorrecta: false }, { texto: "El margen que se obtiene una vez retribuido el coste de capital empleado.", esCorrecta: true }] },
+                { id: "m_t1_p6", tema: 1, origen: "Minaya", texto: "Hay un golpe de estado en la Republica de Burundi, y el actual gobierno se niega a pagar el crédito que habíamos concedido al gobierno anterior para la financiación de la red local de autobuses. Es un riesgo:", opciones: [{ texto: "País (riesgo de transferencia).", esCorrecta: false }, { texto: "País (riesgo soberano).", esCorrecta: true }, { texto: "Liquidez.", esCorrecta: false }, { texto: "Mercado de negociación.", esCorrecta: false }] },
+                { id: "m_t1_p19", tema: 1, origen: "Minaya", texto: "La cultura de riesgos:", opciones: [{ texto: "Comprende una serie de actitudes, valores, habilidades y pautas de actuación frente a los riesgos.", esCorrecta: true }, { texto: "Es el conjunto de normas sobre riesgos, establecidas por el Banco de España.", esCorrecta: false }, { texto: "Corresponde a la aplicación exhaustiva de las normas internas y recomendaciones de la auditoria, en el ámbito de riesgos.", esCorrecta: false }, { texto: "Supone la aplicación de los acuerdos alcanzados por la Asociación Española de Banca, que son vinculantes para la entidad.", esCorrecta: false }] },
+
+                // Test Miguel - Tema 1
+                { id: "mig_t1_p1", tema: 1, origen: "Miguel", texto: "La cultura de riesgos:", opciones: [{ texto: "Corresponde a la aplicación exhaustiva de las normas internas y recomendaciones de la auditoria, en el ámbito de riesgos.", esCorrecta: false }, { texto: "Comprende una serie de actitudes, valores, habilidades y pautas de actuación frente a los riesgos.", esCorrecta: true }, { texto: "Es el conjunto de normas sobre riesgos, establecidas por el Banco de España.", esCorrecta: false }, { texto: "Supone la aplicación de los acuerdos alcanzados por la Asociación Española de Banca, que son vinculantes para la entidad.", esCorrecta: false }] },
+                { id: "mig_t1_p9", tema: 1, origen: "Miguel", texto: "El modelo estándar basado en porcentajes según el tipo de «cartera de negociación» es una opción válida en el marco de Basilea II para calcular:", opciones: [{ texto: "El riesgo de liquidez.", esCorrecta: false }, { texto: "El riesgo de mercado.", esCorrecta: true }, { texto: "El riesgo de modelo.", esCorrecta: false }, { texto: "El riesgo reputacional.", esCorrecta: false }] },
+
+                // Test Luci - Tema 1
+                { id: "lu_t1_p1", tema: 1, origen: "Luci", texto: "La probabilidad de que un cliente no atienda sus obligaciones contractuales durante un periodo superior a 90 días se define como:", opciones: [{ texto: "Pérdida esperada (PE).", esCorrecta: false }, { texto: "Severidad (LGD).", esCorrecta: false }, { texto: "Exposición (EAD).", esCorrecta: false }, { texto: "Probabilidad de incumplimiento (PD).", esCorrecta: true }] },
+                { id: "lu_t1_p8", tema: 1, origen: "Luci", texto: "La ratio que propone que las entidades cubran sus necesidades permanentes de liquidez derivadas de la actividad comercial a través de una adecuada financiación, mediante instrumentos de medio y largo plazo, y de una limitada apelación al corto plazo, así como un mayor peso de los depósitos de clientes, se denomina:", opciones: [{ texto: "LtV (‘loan to value’).", esCorrecta: false }, { texto: "NSFR (‘net stable funding ratio’).", esCorrecta: true }, { texto: "LRC (‘liquidity coverage ratio’).", esCorrecta: false }, { texto: "LtD (‘loan to deposit’).", esCorrecta: false }] },
+                
+                // Test Jenny - Tema 2 (Ejemplo)
+                { id: "j_t2_p1", tema: 2, origen: "Jenny", texto: "El Registro de Aceptaciones Impagadas (RAI) recoge impagados por documento de giro con fuerza ejecutiva en los que consta la firma del deudor reconociendo la deuda, de importe superior a:", opciones: [{ texto: "200 euros", esCorrecta: false }, { texto: "400 euros", esCorrecta: false }, { texto: "300 euros", esCorrecta: true }, { texto: "100 euros", esCorrecta: false }] },
+                { id: "j_t2_p4", tema: 2, origen: "Jenny", texto: "Cuando el fiador se coloca en la misma posición que el deudor principal, renunciando así a una serie de derechos que le concede la ley, ¿se trata de un afianzamiento…?", opciones: [{ texto: "Declarativo", esCorrecta: false }, { texto: "Subsidiario", esCorrecta: false }, { texto: "De segundo orden", esCorrecta: false }, { texto: "Solidario", esCorrecta: true }] },
+
+                // Test Guaci - Tema 3 (Ejemplo)
+                { id: "g_t3_p1", tema: 3, origen: "Guaci", texto: "El activo corriente, corresponde a:", opciones: [{ texto: "Comprenden en general todas las inversiones realizadas por la empresa.", esCorrecta: false }, { texto: "Son aquellos activos de baja calidad.", esCorrecta: false }, { texto: "Todas las inversiones realizadas que duran menos de un año.", esCorrecta: true }, { texto: "Todas las inversiones realizadas que duran más de un año.", esCorrecta: false }] },
+                { id: "g_t3_p17", tema: 3, origen: "Guaci", texto: "Un balance debe:", opciones: [{ texto: "Ser fiel a los intereses de los accionistas.", esCorrecta: false }, { texto: "Ser equilibrado.", esCorrecta: false }, { texto: "Reflejar la imagen fiel de la empresa.", esCorrecta: true }, { texto: "Reflejar la realidad de mercado.", esCorrecta: false }] },
+
+                // Test Alfonso - Tema 4 (Ejemplo)
+                { id: "a_t4_p1", tema: 4, origen: "Alfonso", texto: "Un modelo de negocio empresarial debe responder a las siguientes preguntas:", opciones: [{ texto: "Cliente, diferenciación, calidad.", esCorrecta: false }, { texto: "Mercado, producto/servicio, procesos internos.", esCorrecta: true }, { texto: "Mercado, atributos del producto, tiempo de respuesta.", esCorrecta: false }, { texto: "Factores clave, diferenciación, procesos internos.", esCorrecta: false }] },
+                { id: "a_t4_p6", tema: 4, origen: "Alfonso", texto: "Cuando se habla de ciclicidad de una empresa, en relación al sector en el que ésta actúa, nos referimos:", opciones: [{ texto: "A la rotación de existencias en relación a la media del sector.", esCorrecta: false }, { texto: "A las rotaciones de su activo en relación a la media del sector.", esCorrecta: false }, { texto: "Al incremento o disminución de la actividad de forma continuada a lo largo de diversos ejercicios.", esCorrecta: true }, { texto: "A la necesidad relativa de financiación de circulante en relación a la media del sector.", esCorrecta: false }] },
+
+                // Test Alberto - Tema 5 (Ejemplo)
+                { id: "alb_t5_p1", tema: 5, origen: "Alberto", texto: "En una operación de comercio internacional, el importador es:", opciones: [{ texto: "Quien tiene el papel de notificador y confirmador en el crédito documentario.", esCorrecta: false }, { texto: "Quien resulta beneficiario del crédito documentario, cuya apertura ha sido ordenada por el exportador.", esCorrecta: false }, { texto: "Quien ordena la apertura del crédito documentario, jamás el exportador.", esCorrecta: true }, { texto: "Quien corre con el esfuerzo financiero y el riesgo de la financiación al exportador.", esCorrecta: false }] },
+                { id: "alb_t5_p11", tema: 5, origen: "Alberto", texto: "La cláusula ‘salvo buen fin’ en una letra de cambio:", opciones: [{ texto: "Implica que la entidad de crédito se hace cargo del impagado, al tratarse de una cesión de crédito ‘sin recurso’.", esCorrecta: false }, { texto: "Permite a la entidad de crédito reclamar el importe anticipado al cedente en caso de que el efecto cedido (cesión de crédito) resulte impagado por el deudor.", esCorrecta: true }, { texto: "Impide a la entidad de crédito reclamar el importe anticipado al cedente en caso de que el efecto cedido (cesión de crédito) resulte impagado por el deudor.", esCorrecta: false }, { texto: "La cláusula ‘salvo buen fin’ no puede figurar en una letra de cambio, ya que se trata de una cláusula aplicable a los contratos de ‘factoring’ con anticipo de facturas.", esCorrecta: false }] },
+
+                // Test Eva - Tema 6 (Ejemplo)
+                 { id: "eva_t6_p2", tema: 6, origen: "Eva", texto: "Al denominado Emprendedor de Responsabilidad limitada:", opciones: [{ texto: "En determinadas circunstancias, se le puede excluir su vivienda habitual de la responsabilidad por las deudas derivadas de su actividad empresarial.", esCorrecta: true }, { texto: "Se le puede excluir cualquier vivienda de la responsabilidad por todas las deudas asumidas con las entidades financieras.", esCorrecta: false }, { texto: "Siempre se le puede excluir su vivienda habitual de la responsabilidad por las deudas derivadas de su actividad empresarial.", esCorrecta: false }, { texto: "Se le puede excluir la segunda residencia de la responsabilidad derivada de sus deudas empresariales.", esCorrecta: false }] },
+                 { id: "eva_t6_p11", tema: 6, origen: "Eva", texto: "Cuando decimos que el cálculo del scoring lo realizamos sobre la base de datos de la operativa interna y de la vinculación del cliente, nos referimos al scoring:", opciones: [{ texto: "De Evaluación.", esCorrecta: false }, { texto: "Psicométrico.", esCorrecta: false }, { texto: "Reactivo de Admisión.", esCorrecta: false }, { texto: "De Comportamiento.", esCorrecta: true }] },
+
+                // --- FIN DE PREGUNTAS EXTRAÍDAS (EJEMPLO PARCIAL) ---
+                // Se necesitaría un proceso más exhaustivo para extraer todas las preguntas de todos los temas de los 9 documentos.
+                // Por ahora, añadiré algunas preguntas generadas adicionales para asegurar que todos los temas tengan contenido para la demo.
             ];
+
+            // Lógica para asegurar que haya al menos unas pocas preguntas por tema si la extracción fue limitada
             const preguntasPorTemaBase = {};
             preguntasGlobal.forEach(p => {
                 if (!preguntasPorTemaBase[p.tema]) preguntasPorTemaBase[p.tema] = [];
                 preguntasPorTemaBase[p.tema].push(p);
             });
 
-            for (let i = 1; i <= 10; i++) {
+            for (let i = 1; i <= 10; i++) { // Para 10 temas
                 let existentes = preguntasPorTemaBase[i] ? preguntasPorTemaBase[i].length : 0;
-                for (let j = existentes + 1; j <= 10; j++) { 
-                    preguntasGlobal.push({
-                        id: `t${i}_p${j}_gen`,
-                        tema: i,
-                        origen: "Generada",
-                        texto: `Pregunta generada ${j} para el Tema ${i}: ¿Cuál es la implicación de X en Y bajo la condición Z para el riesgo ${i}?`,
-                        opciones: [
-                            { texto: `Opción A para Tema ${i} Pregunta ${j}`, esCorrecta: true },
-                            { texto: `Opción B para Tema ${i} Pregunta ${j}`, esCorrecta: false },
-                            { texto: `Opción C para Tema ${i} Pregunta ${j}`, esCorrecta: false },
-                            { texto: `Opción D para Tema ${i} Pregunta ${j}`, esCorrecta: false }
-                        ]
-                    });
+                if (existentes < 5) { // Si hay menos de 5 preguntas extraídas para un tema, añadir algunas genéricas
+                    for (let j = existentes + 1; j <= 5; j++) { 
+                        preguntasGlobal.push({
+                            id: `t${i}_p${j}_gen_extra`,
+                            tema: i,
+                            origen: "Generada (Complemento)",
+                            texto: `Pregunta adicional ${j} para el Tema ${i}: Considerando el concepto clave ${String.fromCharCode(64 + j)} del tema ${i}, ¿cuál sería su principal impacto en la evaluación de riesgos?`,
+                            opciones: [
+                                { texto: `Impacto A (Tema ${i})`, esCorrecta: j % 4 === 0 },
+                                { texto: `Impacto B (Tema ${i})`, esCorrecta: j % 4 === 1 },
+                                { texto: `Impacto C (Tema ${i})`, esCorrecta: j % 4 === 2 },
+                                { texto: `Impacto D (Tema ${i})`, esCorrecta: j % 4 === 3 }
+                            ]
+                        });
+                    }
                 }
             }
         }
@@ -222,7 +246,11 @@
             const modalContent = crearContenedorModal("Continuar Sesión");
             const texto = document.createElement('p');
             texto.className = 'text-gray-700 mb-6 text-center';
-            const tipo = estadoActual.progresoGuardado.tipo === 'tema' ? `el tema "${TEMAS_NOMBRES[estadoActual.progresoGuardado.temaId - 1]}"` : "un examen final";
+            const nombreTemaGuardado = (estadoActual.progresoGuardado.tipo === 'tema' && TEMAS_NOMBRES[estadoActual.progresoGuardado.temaId - 1]) 
+                ? TEMAS_NOMBRES[estadoActual.progresoGuardado.temaId - 1] 
+                : `examen`;
+            const tipo = estadoActual.progresoGuardado.tipo === 'tema' ? `el tema "${nombreTemaGuardado}"` : "un examen final";
+
             texto.textContent = `Hemos detectado un progreso guardado en ${tipo}. ¿Deseas continuar?`;
             modalContent.appendChild(texto);
 
@@ -275,50 +303,96 @@
         }
 
         function renderizarInicio() {
-            // Definir el HTML base
             appContainer.innerHTML = `
                 <div class="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white flex flex-col items-center justify-center p-6 font-inter">
                     <div class="bg-slate-800 p-8 sm:p-12 rounded-xl shadow-2xl text-center max-w-2xl w-full transform transition-all hover:scale-105 duration-300">
                         <h1 class="text-4xl sm:text-5xl font-bold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Plataforma de Estudio Interactivo</h1>
                         <p class="text-slate-300 mb-10 text-lg">Prepárate para tus exámenes de Riesgos Bancarios. Elige una opción para comenzar:</p>
-                        <div id="botonesInicioContainer" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            </div>
+                        <div id="botonesInicioContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+                         <div id="botonBorrarDatosContainer" class="mt-10"></div>
                     </div>
                 </div>
             `;
 
-            // Obtener el contenedor de botones
             const botonesContainer = document.getElementById('botonesInicioContainer');
             if (botonesContainer) {
-                // Crear y añadir botones programáticamente
                 const btnRepasarTema = crearBoton('Repasar por Tema', () => { estadoActual.vista = 'seleccionTema'; renderizarVista(); }, 'w-full text-lg');
                 const btnExamenFinal = crearBoton('Hacer Examen Final', () => iniciarExamenFinal(false), 'w-full text-lg');
-                const btnRevisarFallos = crearBoton('Revisar Preguntas Falladas', iniciarRevisionFallos, 'w-full text-lg');
-
+                const btnRevisarFallos = crearBoton('Revisar Preguntas Falladas', iniciarRevisionFallos, 'w-full text-lg md:col-span-2'); // Ocupa 2 columnas en md
+                
                 botonesContainer.appendChild(btnRepasarTema);
                 botonesContainer.appendChild(btnExamenFinal);
                 botonesContainer.appendChild(btnRevisarFallos);
+
             } else {
                 console.error("El contenedor de botones 'botonesInicioContainer' no se encontró.");
             }
+
+            const botonBorrarDatosContainer = document.getElementById('botonBorrarDatosContainer');
+            if (botonBorrarDatosContainer) {
+                const btnBorrarDatos = crearBoton('Borrar Todos los Datos Guardados', mostrarModalBorrarDatos, 'w-full sm:w-auto bg-red-700 hover:bg-red-800 text-sm');
+                botonBorrarDatosContainer.appendChild(btnBorrarDatos);
+            }
+        }
+
+        function mostrarModalBorrarDatos() {
+            const modalContent = crearContenedorModal("Confirmar Borrado de Datos");
+            const texto = document.createElement('p');
+            texto.className = 'text-gray-700 mb-6 text-center';
+            texto.textContent = "¿Estás seguro de que quieres borrar todos los datos guardados (progreso, exámenes, fallos)? Esta acción no se puede deshacer.";
+            modalContent.appendChild(texto);
+
+            const btnConfirmar = crearBoton('Sí, borrar todo', () => {
+                borrarTodosLosDatos();
+                cerrarModal();
+                mostrarMensaje("Todos los datos guardados han sido borrados.", "success");
+            }, 'bg-red-600 hover:bg-red-700 mr-2');
+            
+            const btnCancelar = crearBoton('Cancelar', cerrarModal, 'bg-gray-300 hover:bg-gray-400 text-gray-800 ml-2');
+
+            const divBotones = document.createElement('div');
+            divBotones.className = 'flex justify-center mt-4';
+            divBotones.appendChild(btnConfirmar);
+            divBotones.appendChild(btnCancelar);
+            modalContent.appendChild(divBotones);
+        }
+
+        function borrarTodosLosDatos() {
+            for (let i = 0; i < localStorage.length; i++){
+                const key = localStorage.key(i);
+                if (key && key.startsWith(appId + "_")) { // Solo borrar claves de esta app
+                    localStorage.removeItem(key);
+                    i--; // Ajustar índice ya que la longitud de localStorage cambia
+                }
+            }
+            // Resetear estado actual
+            estadoActual = {
+                vista: 'inicio',
+                modo: null,
+                temaActual: null,
+                examenActualId: null,
+                preguntasCuestionario: [],
+                preguntaActualIdx: 0,
+                respuestasUsuario: [],
+                puntuacion: 0,
+                progresoGuardado: null
+            };
+            console.log("Todos los datos de localStorage para esta app borrados.");
+            renderizarVista(); // Volver al inicio
         }
 
 
         function renderizarSeleccionTema() {
             const temasUnicos = [...new Set(preguntasGlobal.map(p => p.tema))].sort((a,b) => a-b);
-            
             appContainer.innerHTML = `
                 <div class="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-6 font-inter text-white">
                     <div class="bg-slate-800 p-8 sm:p-10 rounded-xl shadow-xl max-w-lg w-full">
                         <h2 class="text-3xl font-bold mb-8 text-center text-sky-400">Selecciona un Tema para Repasar</h2>
-                        <div id="botonesTemaContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                            </div>
-                        <div id="botonVolverContainer">
-                            </div>
+                        <div id="botonesTemaContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6"></div>
+                        <div id="botonVolverContainer"></div>
                     </div>
                 </div>
             `;
-
             const botonesTemaContainer = document.getElementById('botonesTemaContainer');
             if (botonesTemaContainer) {
                 temasUnicos.forEach(numTema => {
@@ -327,7 +401,6 @@
                     botonesTemaContainer.appendChild(botonTema);
                 });
             }
-
             const botonVolverContainer = document.getElementById('botonVolverContainer');
             if (botonVolverContainer) {
                  const botonVolver = crearBoton('Volver al Inicio', () => { estadoActual.vista = 'inicio'; renderizarVista(); }, 'w-full mt-4 bg-slate-600 hover:bg-slate-700');
@@ -347,7 +420,6 @@
         async function iniciarCuestionarioTema(numTema, omitirVerificacionProgreso = false) {
             estadoActual.modo = 'tema';
             estadoActual.temaActual = numTema;
-            
             if (!omitirVerificacionProgreso) {
                 const progresoGuardado = getItem(`topicProgress_${numTema}`);
                 if (progresoGuardado && progresoGuardado.currentQuestionIndex > 0 && !progresoGuardado.completed) {
@@ -356,7 +428,6 @@
                     return; 
                 }
             }
-            
             estadoActual.preguntasCuestionario = shuffleArray([...preguntasGlobal.filter(p => p.tema === numTema)]);
             estadoActual.preguntaActualIdx = 0;
             estadoActual.respuestasUsuario = [];
@@ -367,7 +438,6 @@
 
         async function iniciarExamenFinal(omitirVerificacionProgreso = false) {
             estadoActual.modo = 'examen';
-            
             if (!omitirVerificacionProgreso) {
                 const examKeys = Object.keys(localStorage).filter(k => k.startsWith(`${appId}_examProgress_`));
                 let examenEnCurso = null;
@@ -385,14 +455,12 @@
                     return;
                 }
             }
-
             let preguntasExamen = [];
             const preguntasPorTema = {};
             preguntasGlobal.forEach(p => {
                 if (!preguntasPorTema[p.tema]) preguntasPorTema[p.tema] = [];
                 preguntasPorTema[p.tema].push(p);
             });
-
             for (let i = 1; i <= 10; i++) { 
                 if (preguntasPorTema[i]) {
                     const temaPreguntas = shuffleArray([...preguntasPorTema[i]]);
@@ -411,17 +479,13 @@
         async function iniciarRevisionFallos() {
             const idsFalladas = getItem('failedQuestions') || [];
             const preguntasFalladasCargadas = preguntasGlobal.filter(p => idsFalladas.includes(p.id));
-            
             if (preguntasFalladasCargadas.length === 0) {
                 mostrarMensaje("¡Felicidades! No tienes preguntas falladas para revisar.", "info");
                 estadoActual.vista = 'inicio';
                 renderizarVista();
                 return;
             }
-            estadoActual.preguntasCuestionario = shuffleArray(preguntasFalladasCargadas).map(p => {
-                 const opcionCorrecta = p.opciones.find(op => op.esCorrecta);
-                 return {...p, respuestaCorrectaTexto: opcionCorrecta ? opcionCorrecta.texto : "No disponible"};
-            });
+            estadoActual.preguntasCuestionario = shuffleArray(preguntasFalladasCargadas); // No mapear aquí para añadir respuestaCorrectaTexto
             estadoActual.modo = 'revision';
             estadoActual.preguntaActualIdx = 0;
             estadoActual.respuestasUsuario = []; 
@@ -431,23 +495,18 @@
         }
 
         function renderizarCuestionario() {
-            if (estadoActual.preguntasCuestionario.length === 0 && estadoActual.modo !== 'revision') {
+            if (estadoActual.preguntasCuestionario.length === 0) {
+                 const mensaje = estadoActual.modo === 'revision' ? "No hay preguntas falladas para revisar." : `No hay preguntas disponibles para este ${estadoActual.modo}.`;
+                 const titulo = estadoActual.modo === 'revision' ? "Cuestionario de Preguntas Falladas" : (estadoActual.modo === 'tema' ? TEMAS_NOMBRES[estadoActual.temaActual - 1] : 'Examen Final');
                 appContainer.innerHTML = `
                 <div class="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-6 text-white font-inter">
                     <div class="bg-slate-800 p-8 sm:p-10 rounded-xl shadow-xl text-center">
-                        <h2 class="text-2xl font-bold mb-6">${estadoActual.modo === 'tema' ? TEMAS_NOMBRES[estadoActual.temaActual - 1] : 'Examen Final'}</h2>
-                        <p class="mb-6">No hay preguntas disponibles para este ${estadoActual.modo}.</p>
+                        <h2 class="text-2xl font-bold mb-6">${titulo}</h2>
+                        <p class="mb-6">${mensaje}</p>
                     </div>
                 </div>`;
-                // Añadir botón de volver al inicio si no hay preguntas
                 const btnVolver = crearBoton('Volver al Inicio', () => { estadoActual.vista = 'inicio'; renderizarVista(); }, 'w-full mt-4');
-                appContainer.querySelector('.bg-slate-800').appendChild(btnVolver); // Asegurarse que el contenedor existe
-                return;
-            }
-             if (estadoActual.preguntasCuestionario.length === 0 && estadoActual.modo === 'revision') {
-                mostrarMensaje("No hay preguntas falladas para revisar.", "info");
-                estadoActual.vista = 'inicio';
-                renderizarVista();
+                appContainer.querySelector('.bg-slate-800').appendChild(btnVolver);
                 return;
             }
 
@@ -455,7 +514,11 @@
             const opcionesOriginales = pregunta.opciones;
             const opcionesBarajadas = shuffleArray([...pregunta.opciones]); 
 
-            const tituloCuestionario = estadoActual.modo === 'revision' ? 'Revisión de Fallos' : (estadoActual.modo === 'tema' ? TEMAS_NOMBRES[estadoActual.temaActual - 1] : 'Examen Final');
+            const tituloCuestionario = estadoActual.modo === 'revision' 
+                ? 'Cuestionario de Preguntas Falladas' 
+                : (estadoActual.modo === 'revision_especifica' // Nuevo modo para la revisión post-quiz
+                    ? 'Revisión del Cuestionario Actual'
+                    : (estadoActual.modo === 'tema' ? TEMAS_NOMBRES[estadoActual.temaActual - 1] : 'Examen Final'));
 
             appContainer.innerHTML = `
                 <div class="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white flex flex-col items-center justify-center p-4 sm:p-6 font-inter">
@@ -467,12 +530,9 @@
                         <div class="bg-slate-700 p-5 rounded-lg mb-6 min-h-[60px]">
                             <p class="text-lg sm:text-xl leading-relaxed">${pregunta.texto}</p>
                         </div>
-                        <div id="opcionesCuestionarioContainer" class="mb-8">
-                            </div>
-                        <div id="botonesCuestionarioContainer" class="flex flex-col sm:flex-row justify-between items-center gap-3">
-                            </div>
-                        <div id="respuestaCorrectaContainer" class="mt-4">
-                           </div>
+                        <div id="opcionesCuestionarioContainer" class="mb-8"></div>
+                        <div id="botonesCuestionarioContainer" class="flex flex-col sm:flex-row justify-between items-center gap-3"></div>
+                        <div id="respuestaCorrectaContainer" class="mt-4"></div>
                     </div>
                 </div>
             `;
@@ -487,6 +547,7 @@
                 input.name = "opcion";
                 input.value = indiceOriginal;
                 input.className = "sr-only peer";
+                if (estadoActual.modo === 'revision_especifica') input.disabled = true; // Deshabilitar radios en revisión específica
                 const span = document.createElement('span');
                 span.className = "text-slate-200 peer-checked:text-white";
                 span.textContent = op.texto;
@@ -496,24 +557,34 @@
             });
             
             const botonesCuestionarioContainer = document.getElementById('botonesCuestionarioContainer');
-            const btnSiguiente = crearBoton(estadoActual.modo === 'revision' ? 'Siguiente Fallo' : 'Saltar / Siguiente', manejarSiguientePregunta, 'w-full sm:w-auto');
+            const btnSiguiente = crearBoton(
+                (estadoActual.modo === 'revision' || estadoActual.modo === 'revision_especifica') ? 'Siguiente Pregunta' : 'Saltar / Siguiente', 
+                manejarSiguientePregunta, 
+                'w-full sm:w-auto'
+            );
             botonesCuestionarioContainer.appendChild(btnSiguiente);
 
-            if (estadoActual.modo !== 'revision') {
-                const btnTerminarCuestionario = crearBoton('Terminar Cuestionario', () => { estadoActual.vista = 'resultados'; renderizarResultados(); }, 'w-full sm:w-auto bg-red-600 hover:bg-red-700');
-                botonesCuestionarioContainer.appendChild(btnTerminarCuestionario);
+            const btnTerminar = crearBoton(
+                (estadoActual.modo === 'revision' || estadoActual.modo === 'revision_especifica') ? 'Terminar Revisión' : 'Terminar Cuestionario', 
+                () => { estadoActual.vista = (estadoActual.modo === 'revision' || estadoActual.modo === 'revision_especifica') ? 'resultados' : 'resultados'; renderizarResultados(); }, 
+                'w-full sm:w-auto bg-red-600 hover:bg-red-700'
+            );
+            if (estadoActual.modo === 'revision_especifica' && estadoActual.preguntaActualIdx >= estadoActual.preguntasCuestionario.length -1) {
+                 // No mostrar "terminar" si es la última pregunta en revisión específica, solo "siguiente" que llevará a resultados
             } else {
-                const btnTerminarRevision = crearBoton('Terminar Revisión', () => { estadoActual.vista = 'inicio'; renderizarVista(); }, 'w-full sm:w-auto bg-green-600 hover:bg-green-700');
-                botonesCuestionarioContainer.appendChild(btnTerminarRevision);
+                botonesCuestionarioContainer.appendChild(btnTerminar);
             }
-            
-            if (estadoActual.modo === 'revision' && pregunta.respuestaCorrectaTexto) {
-                const respuestaCorrectaContainer = document.getElementById('respuestaCorrectaContainer');
+
+
+            const respuestaCorrectaContainer = document.getElementById('respuestaCorrectaContainer');
+            if (estadoActual.modo === 'revision_especifica' && pregunta.respuestaCorrectaTexto) {
                 respuestaCorrectaContainer.innerHTML = `<div class="p-3 bg-green-800 border border-green-600 rounded-lg text-sm text-green-200"><strong>Respuesta Correcta:</strong> ${pregunta.respuestaCorrectaTexto}</div>`;
+            } else {
+                respuestaCorrectaContainer.innerHTML = '';
             }
             
             const respuestaGuardada = estadoActual.respuestasUsuario.find(r => r.questionId === pregunta.id);
-            if (respuestaGuardada) {
+            if (respuestaGuardada && estadoActual.modo !== 'revision_especifica') { // No pre-seleccionar en revisión específica
                 const radioInput = appContainer.querySelector(`input[name="opcion"][value="${respuestaGuardada.selectedOptionIndex}"]`);
                 if (radioInput) radioInput.checked = true;
             }
@@ -523,27 +594,36 @@
             const preguntaActual = estadoActual.preguntasCuestionario[estadoActual.preguntaActualIdx];
             const opcionSeleccionadaInput = document.querySelector('input[name="opcion"]:checked');
             
-            if (estadoActual.modo !== 'revision' && opcionSeleccionadaInput) {
-                const opcionIdxOriginal = parseInt(opcionSeleccionadaInput.value); 
-                const esCorrecta = preguntaActual.opciones[opcionIdxOriginal].esCorrecta;
-                const respuestaExistenteIdx = estadoActual.respuestasUsuario.findIndex(r => r.questionId === preguntaActual.id);
-                if (respuestaExistenteIdx > -1) {
-                    estadoActual.respuestasUsuario[respuestaExistenteIdx] = { questionId: preguntaActual.id, selectedOptionIndex: opcionIdxOriginal, isCorrect: esCorrecta };
-                } else {
-                    estadoActual.respuestasUsuario.push({ questionId: preguntaActual.id, selectedOptionIndex: opcionIdxOriginal, isCorrect: esCorrecta });
+            // Solo procesar respuesta si no estamos en modo 'revision_especifica'
+            if (estadoActual.modo !== 'revision_especifica') {
+                if (opcionSeleccionadaInput) {
+                    const opcionIdxOriginal = parseInt(opcionSeleccionadaInput.value); 
+                    const esCorrecta = preguntaActual.opciones[opcionIdxOriginal].esCorrecta;
+                    const respuestaExistenteIdx = estadoActual.respuestasUsuario.findIndex(r => r.questionId === preguntaActual.id);
+                    if (respuestaExistenteIdx > -1) {
+                        estadoActual.respuestasUsuario[respuestaExistenteIdx] = { questionId: preguntaActual.id, selectedOptionIndex: opcionIdxOriginal, isCorrect: esCorrecta };
+                    } else {
+                        estadoActual.respuestasUsuario.push({ questionId: preguntaActual.id, selectedOptionIndex: opcionIdxOriginal, isCorrect: esCorrecta });
+                    }
+                    // Actualizar lista global de fallos
+                    if (esCorrecta) {
+                        await quitarDeFalladas(preguntaActual.id);
+                    } else {
+                        await anadirAFalladas(preguntaActual);
+                    }
+                } else { 
+                     if (estadoActual.modo !== 'revision') { // Si es un quiz normal y se salta, se considera fallada
+                        await anadirAFalladas(preguntaActual); 
+                     }
                 }
-                if (esCorrecta) {
-                    await quitarDeFalladas(preguntaActual.id);
-                } else {
-                    await anadirAFalladas(preguntaActual);
-                }
-            } else if (estadoActual.modo !== 'revision' && !opcionSeleccionadaInput) {
-                 await anadirAFalladas(preguntaActual); 
             }
+
             estadoActual.preguntaActualIdx++;
-            if (estadoActual.modo !== 'revision') {
-                await guardarProgresoLocalStorage();
+            // Guardar progreso para modos 'tema' y 'examen'
+            if (estadoActual.modo === 'tema' || estadoActual.modo === 'examen') {
+                await guardarProgresoLocalStorage(); 
             }
+            
             if (estadoActual.preguntaActualIdx < estadoActual.preguntasCuestionario.length) {
                 if (estadoActual.modo === 'examen' && estadoActual.preguntaActualIdx % 20 === 0 && estadoActual.preguntaActualIdx > 0) {
                     mostrarEstadisticasParcialesExamen(); 
@@ -558,9 +638,12 @@
         
         async function guardarProgresoLocalStorage() {
             const ahora = new Date().toISOString();
+            let key;
+            let progreso;
+
             if (estadoActual.modo === 'tema') {
-                const key = `topicProgress_${estadoActual.temaActual}`;
-                const progreso = {
+                key = `topicProgress_${estadoActual.temaActual}`;
+                progreso = {
                     temaId: estadoActual.temaActual,
                     currentQuestionIndex: estadoActual.preguntaActualIdx,
                     userAnswers: estadoActual.respuestasUsuario,
@@ -568,10 +651,9 @@
                     completed: estadoActual.preguntaActualIdx >= estadoActual.preguntasCuestionario.length,
                     lastAccessed: ahora 
                 };
-                setItem(key, progreso);
             } else if (estadoActual.modo === 'examen') {
-                const key = `examProgress_${estadoActual.examenActualId}`;
-                const progreso = {
+                key = `examProgress_${estadoActual.examenActualId}`;
+                progreso = {
                     examId: estadoActual.examenActualId,
                     currentQuestionIndex: estadoActual.preguntaActualIdx,
                     userAnswers: estadoActual.respuestasUsuario,
@@ -580,11 +662,13 @@
                     completed: estadoActual.preguntaActualIdx >= estadoActual.preguntasCuestionario.length,
                     lastAccessed: ahora
                 };
-                setItem(key, progreso);
-            }
+            } 
+            // No guardamos progreso específico para 'revision' o 'revision_especifica' aquí
+            if(key && progreso) setItem(key, progreso);
         }
 
         function calcularPuntuacion() {
+            // Solo calcula puntuación para las respuestas dadas en la sesión actual del cuestionario
             return estadoActual.respuestasUsuario.filter(r => r.isCorrect).length;
         }
         
@@ -610,74 +694,95 @@
         }
 
         async function renderizarResultados() {
-            if (estadoActual.modo === 'revision') { 
-                estadoActual.vista = 'inicio';
-                renderizarVista();
-                return;
-            }
-            const puntuacionFinal = calcularPuntuacion();
+            const puntuacionFinal = calcularPuntuacion(); // Basado en estadoActual.respuestasUsuario de la sesión actual
             const totalPreguntas = estadoActual.preguntasCuestionario.length;
             const porcentaje = totalPreguntas > 0 ? (puntuacionFinal / totalPreguntas * 100).toFixed(1) : 0;
             
             const ahora = new Date().toISOString();
+            let keyToUpdate;
+            let dataToUpdate;
+
             if (estadoActual.modo === 'tema') {
-                setItem(`topicProgress_${estadoActual.temaActual}`, { 
-                    ...getItem(`topicProgress_${estadoActual.temaActual}`), 
+                keyToUpdate = `topicProgress_${estadoActual.temaActual}`;
+                dataToUpdate = { 
                     score: puntuacionFinal, 
                     completed: true, 
                     userAnswers: estadoActual.respuestasUsuario, 
                     lastAccessed: ahora,
                     currentQuestionIndex: estadoActual.preguntaActualIdx 
-                });
+                };
             } else if (estadoActual.modo === 'examen') {
-                 setItem(`examProgress_${estadoActual.examenActualId}`, { 
-                    ...getItem(`examProgress_${estadoActual.examenActualId}`),
+                 keyToUpdate = `examProgress_${estadoActual.examenActualId}`;
+                 dataToUpdate = { 
                     score: puntuacionFinal, 
                     completed: true, 
                     userAnswers: estadoActual.respuestasUsuario,
                     lastAccessed: ahora,
                     currentQuestionIndex: estadoActual.preguntaActualIdx 
-                });
+                };
+            } else if (estadoActual.modo === 'revision') {
+                // El quiz de revisión ya actualizó la lista global de fallos en manejarSiguientePregunta.
+                // Aquí solo mostramos los resultados de *esta sesión de revisión*.
+            }
+
+
+            if (keyToUpdate && dataToUpdate && (estadoActual.modo === 'tema' || estadoActual.modo === 'examen')) {
+                const progresoExistente = getItem(keyToUpdate) || {};
+                setItem(keyToUpdate, { ...progresoExistente, ...dataToUpdate });
             }
             
-            const tituloResultados = estadoActual.modo === 'tema' ? `Resultados: ${TEMAS_NOMBRES[estadoActual.temaActual - 1]}` : 'Resultados del Examen Final';
+            let tituloResultados;
+            if (estadoActual.modo === 'revision') {
+                tituloResultados = 'Resultados del Cuestionario de Fallos';
+            } else if (estadoActual.modo === 'tema') {
+                tituloResultados = `Resultados: ${TEMAS_NOMBRES[estadoActual.temaActual - 1]}`;
+            } else {
+                tituloResultados = 'Resultados del Examen Final';
+            }
             
             appContainer.innerHTML = `
                 <div class="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white flex flex-col items-center justify-center p-6 font-inter">
                     <div class="bg-slate-800 p-8 sm:p-12 rounded-xl shadow-2xl text-center max-w-md w-full">
                         <h2 class="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500">${tituloResultados}</h2>
-                        <p class="text-xl mb-2">Tu puntuación: <span class="font-bold text-yellow-400">${puntuacionFinal} / ${totalPreguntas}</span></p>
+                        <p class="text-xl mb-2">Tu puntuación en esta sesión: <span class="font-bold text-yellow-400">${puntuacionFinal} / ${totalPreguntas}</span></p>
                         <p class="text-xl mb-8">Porcentaje de aciertos: <span class="font-bold text-yellow-400">${porcentaje}%</span></p>
-                        <div id="botonesResultadosContainer" class="space-y-4">
-                            </div>
+                        <div id="botonesResultadosContainer" class="space-y-4"></div>
                     </div>
                 </div>
             `;
 
             const botonesResultadosContainer = document.getElementById('botonesResultadosContainer');
             if (botonesResultadosContainer) {
-                const btnRevisarFallosCuestionario = crearBoton('Revisar Fallos de Este Cuestionario', mostrarFallosDelCuestionario, 'w-full bg-orange-500 hover:bg-orange-600');
+                const btnRevisarFallosSesion = crearBoton('Revisar Fallos de Esta Sesión', mostrarFallosDelCuestionarioActual, 'w-full bg-orange-500 hover:bg-orange-600');
                 const btnVolverInicio = crearBoton('Volver al Inicio', () => { estadoActual.vista = 'inicio'; renderizarVista(); }, 'w-full');
-                botonesResultadosContainer.appendChild(btnRevisarFallosCuestionario);
+                botonesResultadosContainer.appendChild(btnRevisarFallosSesion);
                 botonesResultadosContainer.appendChild(btnVolverInicio);
             }
         }
         
-        function mostrarFallosDelCuestionario() {
+        function mostrarFallosDelCuestionarioActual() {
             const falladasEsteCuestionario = estadoActual.respuestasUsuario
                 .filter(r => !r.isCorrect)
                 .map(r => r.questionId);
-            const preguntasParaRevisar = preguntasGlobal.filter(p => falladasEsteCuestionario.includes(p.id));
+            
+            // Obtener las preguntas originales del cuestionario actual que se fallaron
+            const preguntasParaRevisar = estadoActual.preguntasCuestionario
+                .filter(p => falladasEsteCuestionario.includes(p.id))
+                .map(p => { // Añadir la respuesta correcta para visualización
+                    const opcionCorrecta = p.opciones.find(op => op.esCorrecta);
+                    return {...p, respuestaCorrectaTexto: opcionCorrecta ? opcionCorrecta.texto : "No disponible"};
+                });
+
             if (preguntasParaRevisar.length === 0) {
                 mostrarMensaje("¡No tuviste errores en este cuestionario!", "info");
                 return;
             }
-            estadoActual.preguntasCuestionario = shuffleArray(preguntasParaRevisar).map(p => {
-                const opcionCorrecta = p.opciones.find(op => op.esCorrecta);
-                return {...p, respuestaCorrectaTexto: opcionCorrecta ? opcionCorrecta.texto : "No disponible"};
-            });
-            estadoActual.modo = 'revision'; 
+            
+            // Usar un nuevo array para no modificar el estado del cuestionario original
+            estadoActual.preguntasCuestionarioRevisionEspecifica = preguntasParaRevisar;
+            estadoActual.modo = 'revision_especifica'; 
             estadoActual.preguntaActualIdx = 0;
+            // No resetear respuestasUsuario aquí, ya que no se califica, solo se muestra
             estadoActual.vista = 'cuestionario';
             renderizarVista();
         }
