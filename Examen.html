@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App de Estudio: Riesgos Bancarios (Local)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script type="module">
+        // No Firebase imports needed for localStorage version
+
+        const appId = 'riesgos-bancarios-app-local-v1'; // Namespace for localStorage
+        let preguntasGlobal = [];
+
+        const TEMAS_NOMBRES = [
+            "Tema 1: Fundamentos de Riesgos y Adecuación de Capital",
+            "Tema 2: Gestión del Riesgo de Crédito: Particulares",
+            "Tema 3: Análisis de Estados Financieros",
+            "Tema 4: Gestión del Riesgo de Crédito: Empresas, Seguimiento y Morosidad",
+            "Tema 5: Riesgos de Productos de Activo",
+            "Tema 6: Concesión de Operaciones a Personas Físicas: Consumo/Hipotecario",
+            "Tema 7: Concesión de Operaciones a Personas Físicas: Negocios",
+            "Tema 8: Concesión de Operaciones a Personas Jurídicas: Microempresas",
+            "Tema 9: Concesión de Operaciones al Sector Agrícola",
+            "Tema 10: Formalización, Seguimiento, Morosidad y Acción Recuperadora"
+        ];
+
+        async function cargarPreguntas() {
+            // Preguntas de muestra (igual que antes)
+            preguntasGlobal = [
+                // Tema 1
+                { id: "t1_p1", tema: 1, origen: "Wenceslao", texto: "De acuerdo al Pilar III de los acuerdos de Basilea, las entidades están obligadas a publicar un informe explicativo de las medidas aplicadas para la adecuación y evaluación interna de la liquidez, denominado:", opciones: [{ texto: "Informe de Liquidez.", esCorrecta: false }, { texto: "Informe del Pilar III.", esCorrecta: false }, { texto: "Informe de Relevancia Prudencial.", esCorrecta: true }, { texto: "Informe de Solvencia.", esCorrecta: false }] },
+                { id: "t1_p2", tema: 1, origen: "Minaya", texto: "El riesgo ocasionado por prácticas inadecuadas en la relación del banco con sus clientes se denomina:", opciones: [{ texto: "Riesgo modelo", esCorrecta: false }, { texto: "Riesgo reputacional", esCorrecta: false }, { texto: "Riesgo legal", esCorrecta: false }, { texto: "Riesgo de conducta", esCorrecta: true }] },
+                { id: "t1_p3", tema: 1, origen: "Luci", texto: "La probabilidad de que un cliente no atienda sus obligaciones contractuales durante un periodo superior a 90 días se define como:", opciones: [{ texto: "Pérdida esperada (PE).", esCorrecta: false }, { texto: "Severidad (LGD).", esCorrecta: false }, { texto: "Exposición (EAD).", esCorrecta: false }, { texto: "Probabilidad de incumplimiento (PD).", esCorrecta: true } ]},
+                { id: "t1_p4", tema: 1, origen: "Eva", texto: "La definición, actualización y supervisión del cumplimiento del marco de apetito al riesgo, es una responsabilidad del:", opciones: [{ texto: "Dirección de Riesgos.", esCorrecta: false }, { texto: "Comité de Activos y Pasivos.", esCorrecta: false }, { texto: "Consejo de Administración.", esCorrecta: true }, { texto: "Dirección General.", esCorrecta: false }] },
+                { id: "t1_p5", tema: 1, origen: "Alberto", texto: "Que comité tiene la misión de gestionar, controlar y monitorizar de forma global los riesgos que afectan a la entidad:", opciones: [{ texto: "Comité de Modelos y Parámetros", esCorrecta: false }, { texto: "Comité de Políticas de Riesgo", esCorrecta: true }, { texto: "Comité global de riesgo de credito", esCorrecta: false }, { texto: "Comité de Seguimiento del Riesgo", esCorrecta: false }] },
+                // Tema 2
+                { id: "t2_p1", tema: 2, origen: "Wenceslao", texto: "En una Sociedad Civil Particular:", opciones: [{ texto: "Está regulada por la Ley de Sociedades Anónimas.", esCorrecta: false }, { texto: "Carece de beneficios.", esCorrecta: false }, { texto: "La responsabilidad de sus socios en mancomunada.", esCorrecta: true }, { texto: "El contrato de constitución, no requiere en ningún caso su formalizarlo en escritura pública.", esCorrecta: false }] },
+                { id: "t2_p2", tema: 2, origen: "Minaya", texto: "El Registro de Aceptaciones Impagadas (RAI) recoge impagados por documento de giro con fuerza ejecutiva de importe superior a:", opciones: [{ texto: "300 euros", esCorrecta: true }, { texto: "100 euros", esCorrecta: false }, { texto: "200 euros", esCorrecta: false }, { texto: "400 euros", esCorrecta: false }] },
+                { id: "t2_p3", tema: 2, origen: "Luci", texto: "Con la muerte de un fiador de una operación de financiación:", opciones: [{ texto: "Se extingue el afianzamiento en el momento de la defunción.", esCorrecta: true }, { texto: "Solo se extinguirá cuando se cumpla la obligación del deudor afianzado y pasará a formar parte de la masa hereditaria, tanto si está o no al corriente de pago.", esCorrecta: false }, { texto: "Solo se extinguirá cuando se cumpla la obligación del deudor afianzado y únicamente pasará a formar parte de la masa hereditaria si no está al corriente de pago.", esCorrecta: false }, { texto: "Se debe esperar al vencimiento de la operación financiada, para tomar las decisiones oportunas, ya que el afianzamiento no prescribe.", esCorrecta: false } ]},
+                { id: "t2_p4", tema: 2, origen: "Jenny", texto: "El Badexcug, recoge información de personas físicas y jurídicas con operaciones impagadas en las entidades de crédito por saldos morosos superiores a:", opciones: [{ texto: "200 euros", esCorrecta: false }, { texto: "300 euros", esCorrecta: true }, { texto: "400 euros", esCorrecta: false }, { texto: "100 euros", esCorrecta: false }] },
+                { id: "t2_p5", tema: 2, origen: "Guaci", texto: "¿Qué \"fideliza\" a un cliente en lo que se refiere a la atención que recibe?", opciones: [{ texto: "Mantener un contacto diario con el cliente.", esCorrecta: false }, { texto: "Asesoramiento y soluciones.", esCorrecta: true }, { texto: "Trato distante, pero profesional.", esCorrecta: false }, { texto: "Dar una respuesta inmediata, aunque no tengamos toda la información.", esCorrecta: false }] },
+                // Tema 3
+                { id: "t3_p1", tema: 3, origen: "Wenceslao", texto: "El apalancamiento valora la proporción entre:", opciones: [{ texto: "Los activos y pasivos totales", esCorrecta: false }, { texto: "La deuda y los capitales propios.", esCorrecta: true }, { texto: "La deuda total y el BAI.", esCorrecta: false }, { texto: "El capital propio y los activos.", esCorrecta: false }] },
+                { id: "t3_p2", tema: 3, origen: "Minaya", texto: "La cuenta de tesorería:", opciones: [{ texto: "Registra las ventas realizadas por la empresa.", esCorrecta: false }, { texto: "Recoge los cobros y los pagos que genera la actividad de la empresa.", esCorrecta: true }, { texto: "Recoge sólo los ingresos y gastos de la empresa.", esCorrecta: false }, { texto: "Recoge exclusivamente los ingresos y los gastos con independencia del momento en que se produce la entrada o salida efectiva del dinero.", esCorrecta: false }] },
+                { id: "t3_p3", tema: 3, origen: "Miguel", texto: "Si el total de activos de una empresa es 1.000 €, el exigible total es de 400 € y el beneficio neto es 100€. Calcular el R.O.E.", opciones: [{ texto: "15,66%.", esCorrecta: false }, { texto: "10%.", esCorrecta: false }, { texto: "16,66%.", esCorrecta: true }, { texto: "15%.", esCorrecta: false }] },
+                { id: "t3_p4", tema: 3, origen: "Alfonso", texto: "El presupuesto de tesorería es:", opciones: [{ texto: "El cálculo de los cobros y pagos realizados en los últimos 3 años.", esCorrecta: false }, { texto: "El cálculo del estado de flujos de tesorería con previsiones futuras.", esCorrecta: true }, { texto: "La proyección de beneficios en el año próximo.", esCorrecta: false }, { texto: "El cálculo del beneficio a fin del periodo de evaluación.", esCorrecta: false }] },
+                { id: "t3_p5", tema: 3, origen: "Jenny", texto: "Respecto a la ratio “plazo de pago”, señalar la respuesta incorrecta:", opciones: [{ texto: "Para que sea mayor la ratio plazo de cobro, se debe incumplir los plazos de pago.", esCorrecta: true }, { texto: "Debe incluir el IVA.", esCorrecta: false }, { texto: "Cuanto mayor, en principio es mejor, ya que se obtiene mayor plazo de financiamiento por parte de los proveedores.", esCorrecta: false }, { texto: "Indica el número de días promedios que se tarda en pagar a los proveedores.", esCorrecta: false }] },
+                // Tema 4
+                { id: "t4_p1", tema: 4, origen: "Guaci", texto: "Un modelo de negocio empresarial debe responder a las siguientes preguntas:", opciones: [{ texto: "Cliente, diferenciación, calidad.", esCorrecta: false }, { texto: "Mercado, producto/servicio, procesos internos.", esCorrecta: true }, { texto: "Mercado, atributos del producto, tiempo de respuesta.", esCorrecta: false }, { texto: "Factores clave, diferenciación, procesos internos.", esCorrecta: false }] },
+                { id: "t4_p2", tema: 4, origen: "Eva", texto: "Una operación formalizada para sustituir a otra concedida previamente por la propia entidad, sin que el prestatario tenga dificultades financieras, se considera una operación:", opciones: [{ texto: "Refinanciada", esCorrecta: false }, { texto: "Renegociada", esCorrecta: false }, { texto: "Renovación", esCorrecta: true }, { texto: "Reestructurada", esCorrecta: false }] },
+                // Tema 5
+                { id: "t5_p1", tema: 5, origen: "Alberto", texto: "Si un cliente muestra preferencia por la cuenta de crédito de disposición discrecional como producto ideal para financiar su circulante:", opciones: [{ texto: "La entidad de crédito puede considerarlo no tan ideal, debido a la discrecionalidad de su utilización.", esCorrecta: true }, { texto: "La cuenta de crédito no es un producto para la financiación del circulante.", esCorrecta: false }, { texto: "La entidad de crédito también puede considerarlo ideal.", esCorrecta: false }, { texto: "Es porque sabe que es un producto con un alto nivel de riesgo para la entidad.", esCorrecta: false }] },
+                { id: "t5_p2", tema: 5, origen: "Wenceslao", texto: "El ‘crowdfunding’:", opciones: [{ texto: "Suele implicar la participación de un elevado número de personas, que aportan pequeñas cantidades a cambio de una recompensa futura.", esCorrecta: true }, { texto: "Es lo mismo que el ‘crowdlending’.", esCorrecta: false }, { texto: "Es uno de los productos bancarios que tienen un más alto nivel de riesgo.", esCorrecta: false }, { texto: "Suele implicar la participación de un reducido número de personas.", esCorrecta: false }] },
+                // Tema 6
+                { id: "t6_p1", tema: 6, origen: "Minaya", texto: "Una vez firmada en notaría la minuta del préstamo que incorpora la garantía hipotecaria, procede remitirla a:", opciones: [{ texto: "La oficina donde se realizan las anotaciones relacionadas con la propiedad del inmueble, denominada Registro de la Propiedad.", esCorrecta: true }, { texto: "La oficina de recaudación tributaria.", esCorrecta: false }, { texto: "La oficina del Registro de Anotaciones y Embargos.", esCorrecta: false }, { texto: "La oficina denominada Registro de Patentes y Marcas.", esCorrecta: false }] },
+                { id: "t6_p2", tema: 6, origen: "Luci", texto: "Para que una persona física sea considerada como Emprendedor de Responsabilidad Limitada:", opciones: [{ texto: "Tiene que otorgar acta notarial y haberla inscrito tanto en el Registro Mercantil, como en el Registro de la Propiedad sobre su vivienda.", esCorrecta: true }, { texto: "Tiene que haber sido inscrito en el registro mercantil.", esCorrecta: false }, { texto: "Tiene que haberlo manifestado en el Ministerio de Hacienda.", esCorrecta: false }, { texto: "Tiene que otorgar acta notarial al respecto pero no inscribirla.", esCorrecta: false }] },
+                // Tema 7
+                { id: "t7_p1", tema: 7, origen: "Jenny", texto: "Las personas físicas con actividad empresarial deben presentar la declaración del impuesto del valor añadido con periodicidad:", opciones: [{ texto: "Trimestral.", esCorrecta: true }, { texto: "Anual.", esCorrecta: false }, { texto: "Mensual.", esCorrecta: false }, { texto: "Trimestral, excepto el régimen de estimación objetiva.", esCorrecta: false }] },
+                { id: "t7_p2", tema: 7, origen: "Miguel", texto: "En el caso identificado como ‘financiación a un transportista’, se determina que la mejor fórmula de financiación de circulante para el cliente es:", opciones: [{ texto: "El descuento comercial, pues es un riesgo autocancelable.", esCorrecta: true }, { texto: "La cuenta de crédito, pues es un riesgo con garantía real.", esCorrecta: false }, { texto: "La cuenta de crédito, pues es un riesgo fácil de inmovilizar.", esCorrecta: false }, { texto: "El descuento comercial, pues es un riesgo muy flexible en el tiempo.", esCorrecta: false }] },
+                // Tema 8
+                { id: "t8_p1", tema: 8, origen: "Alfonso", texto: "Entendemos por Fondo de Maniobra la diferencia entre:", opciones: [{ texto: "El Activo Corriente y el Pasivo Corriente", esCorrecta: true }, { texto: "El Activo no Corriente y el Pasivo Corriente.", esCorrecta: false }, { texto: "El Activo Corriente y el Pasivo no Corriente", esCorrecta: false }, { texto: "El Activo no Corriente y los Fondos Propios", esCorrecta: false }] },
+                { id: "t8_p2", tema: 8, origen: "Eva", texto: "En España, los microcréditos están sujetos a la Ley 16/2011 de:", opciones: [{ texto: "Contratos de crédito al consumo.", esCorrecta: true }, { texto: "Contratos financieros varios.", esCorrecta: false }, { texto: "Contratos mercantiles simples.", esCorrecta: false }, { texto: "Contratos financieros y derivados.", esCorrecta: false }] },
+                // Tema 9
+                { id: "t9_p1", tema: 9, origen: "Guaci", texto: "Se denomina aparcero:", opciones: [{ texto: "Al arrendador de los terrenos rústicos que se obliga a entregar al propietario una parte de la cosecha.", esCorrecta: true }, { texto: "Al arrendador de los terrenos rústicos que se obliga a pagar un canon monetario.", esCorrecta: false }, { texto: "Al Presidente de la cooperativa.", esCorrecta: false }, { texto: "Al agricultor propietario que arrienda su propiedad.", esCorrecta: false }] },
+                { id: "t9_p2", tema: 9, origen: "Alberto", texto: "La Política Agrícola Comunitaria marcada desde el año 1.962, llevo en la década de los 1.980 a una:", opciones: [{ texto: "Sobreproducción de alimentos.", esCorrecta: true }, { texto: "Crisis de consumo agrícola.", esCorrecta: false }, { texto: "Disminución de la tierra cultivada.", esCorrecta: false }, { texto: "Aumento de la demanda de alimentos desde el exterior.", esCorrecta: false }] },
+                // Tema 10
+                { id: "t10_p1", tema: 10, origen: "Wenceslao", texto: "¿Qué medida se aplica cuando hay una reducción temporal de ingresos?", opciones: [{ texto: "Periodos de carencia.", esCorrecta: true }, { texto: "Quita de intereses", esCorrecta: false }, { texto: "Novación del plazo de amortización.", esCorrecta: false }, { texto: "Refinanciación de saldos vencidos.", esCorrecta: false }] },
+                { id: "t10_p2", tema: 10, origen: "Minaya", texto: "¿Qué implica la venta tutelada?", opciones: [{ texto: "Mandato de venta en exclusiva con Caixabank para comercializar el inmueble hipotecado.", esCorrecta: true }, { texto: "Venta directa por parte del cliente.", esCorrecta: false }, { texto: "Novación del plazo de amortización.", esCorrecta: false }, { texto: "Entrega de la vivienda hipotecada a cambio de condonación total o parcial de la deuda.", esCorrecta: false }] },
+            ];
+            const preguntasPorTemaBase = {};
+            preguntasGlobal.forEach(p => {
+                if (!preguntasPorTemaBase[p.tema]) preguntasPorTemaBase[p.tema] = [];
+                preguntasPorTemaBase[p.tema].push(p);
+            });
+
+            for (let i = 1; i <= 10; i++) {
+                let existentes = preguntasPorTemaBase[i] ? preguntasPorTemaBase[i].length : 0;
+                for (let j = existentes + 1; j <= 10; j++) { 
+                    preguntasGlobal.push({
+                        id: `t${i}_p${j}_gen`,
+                        tema: i,
+                        origen: "Generada",
+                        texto: `Pregunta generada ${j} para el Tema ${i}: ¿Cuál es la implicación de X en Y bajo la condición Z para el riesgo ${i}?`,
+                        opciones: [
+                            { texto: `Opción A para Tema ${i} Pregunta ${j}`, esCorrecta: true },
+                            { texto: `Opción B para Tema ${i} Pregunta ${j}`, esCorrecta: false },
+                            { texto: `Opción C para Tema ${i} Pregunta ${j}`, esCorrecta: false },
+                            { texto: `Opción D para Tema ${i} Pregunta ${j}`, esCorrecta: false }
+                        ]
+                    });
+                }
+            }
+        }
+        
+        let estadoActual = {
+            vista: 'inicio', 
+            modo: null, 
+            temaActual: null, 
+            examenActualId: null, 
+            preguntasCuestionario: [],
+            preguntaActualIdx: 0,
+            respuestasUsuario: [],
+            puntuacion: 0,
+            progresoGuardado: null 
+        };
+
+        const appContainer = document.getElementById('app');
+
+        function getItem(key) {
+            try {
+                const item = localStorage.getItem(`${appId}_${key}`);
+                return item ? JSON.parse(item) : null;
+            } catch (e) {
+                console.error("Error al leer de localStorage:", key, e);
+                return null;
+            }
+        }
+
+        function setItem(key, value) {
+            try {
+                localStorage.setItem(`${appId}_${key}`, JSON.stringify(value));
+            } catch (e) {
+                console.error("Error al escribir en localStorage:", key, e);
+                mostrarMensaje("Error al guardar progreso. Es posible que el almacenamiento esté lleno.", "error");
+            }
+        }
+
+        function removeItem(key) {
+            localStorage.removeItem(`${appId}_${key}`);
+        }
+
+        function renderizarVista() {
+            appContainer.innerHTML = ''; 
+            switch (estadoActual.vista) {
+                case 'inicio':
+                    renderizarInicio();
+                    break;
+                case 'seleccionTema':
+                    renderizarSeleccionTema();
+                    break;
+                case 'cuestionario':
+                    renderizarCuestionario();
+                    break;
+                case 'resultados':
+                    renderizarResultados();
+                    break;
+                default:
+                    renderizarInicio();
+            }
+        }
+
+        function crearBoton(texto, onClick, clasesAdicionales = '') {
+            const boton = document.createElement('button');
+            boton.textContent = texto;
+            boton.className = `bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-150 ease-in-out ${clasesAdicionales}`;
+            boton.onclick = onClick;
+            return boton;
+        }
+        
+        function crearContenedorModal(titulo) {
+            const modalOverlay = document.createElement('div');
+            modalOverlay.id = 'modalOverlay';
+            modalOverlay.className = 'fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4';
+            const modalContent = document.createElement('div');
+            modalContent.className = 'bg-white p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-md transform transition-all scale-95 opacity-0 animate-modal-appear';
+            modalContent.innerHTML = `<h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">${titulo}</h2>`;
+            modalOverlay.appendChild(modalContent);
+            document.body.appendChild(modalOverlay);
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 50);
+            return modalContent;
+        }
+
+        function cerrarModal() {
+            const modalOverlay = document.getElementById('modalOverlay');
+            if (modalOverlay) {
+                const modalContent = modalOverlay.querySelector('div > div'); 
+                 if (modalContent) {
+                    modalContent.classList.remove('scale-100', 'opacity-100');
+                    modalContent.classList.add('scale-95', 'opacity-0');
+                }
+                setTimeout(() => modalOverlay.remove(), 300); 
+            }
+        }
+
+        async function verificarProgresoPrevio() {
+            let progresoTemaMasReciente = null;
+            for (let i = 1; i <= 10; i++) { 
+                const progreso = getItem(`topicProgress_${i}`);
+                if (progreso && (!progresoTemaMasReciente || new Date(progreso.lastAccessed) > new Date(progresoTemaMasReciente.lastAccessed))) {
+                    progresoTemaMasReciente = {...progreso, id: String(i), tipo: 'tema'};
+                }
+            }
+            let progresoExamenMasReciente = null;
+            const examKeys = Object.keys(localStorage).filter(k => k.startsWith(`${appId}_examProgress_`));
+            examKeys.forEach(key => {
+                const progreso = getItem(key.substring(appId.length + 1)); 
+                if (progreso && (!progresoExamenMasReciente || new Date(progreso.lastAccessed) > new Date(progresoExamenMasReciente.lastAccessed))) {
+                    progresoExamenMasReciente = {...progreso, id: key.substring(appId.length + 1 + "examProgress_".length), tipo: 'examen'};
+                }
+            });
+            
+            let progresoParaContinuar = null;
+            if (progresoTemaMasReciente && progresoExamenMasReciente) {
+                progresoParaContinuar = new Date(progresoTemaMasReciente.lastAccessed) > new Date(progresoExamenMasReciente.lastAccessed) ? progresoTemaMasReciente : progresoExamenMasReciente;
+            } else {
+                progresoParaContinuar = progresoTemaMasReciente || progresoExamenMasReciente;
+            }
+
+            if (progresoParaContinuar && progresoParaContinuar.currentQuestionIndex > 0 && !progresoParaContinuar.completed) {
+                estadoActual.progresoGuardado = progresoParaContinuar;
+                mostrarModalContinuar();
+            } else {
+                renderizarVista(); 
+            }
+        }
+
+        function mostrarModalContinuar() {
+            const modalContent = crearContenedorModal("Continuar Sesión");
+            const texto = document.createElement('p');
+            texto.className = 'text-gray-700 mb-6 text-center';
+            const tipo = estadoActual.progresoGuardado.tipo === 'tema' ? `el tema "${TEMAS_NOMBRES[estadoActual.progresoGuardado.temaId - 1]}"` : "un examen final";
+            texto.textContent = `Hemos detectado un progreso guardado en ${tipo}. ¿Deseas continuar?`;
+            modalContent.appendChild(texto);
+
+            const btnContinuar = crearBoton('Sí, continuar', () => {
+                continuarCuestionario();
+                cerrarModal();
+            }, 'bg-green-500 hover:bg-green-600 mr-2');
+            
+            const btnNuevo = crearBoton('No, empezar de nuevo', async () => {
+                const idProgreso = estadoActual.progresoGuardado.tipo === 'tema' ? estadoActual.progresoGuardado.temaId : estadoActual.progresoGuardado.id;
+                await limpiarProgreso(estadoActual.progresoGuardado.tipo, idProgreso);
+                estadoActual.progresoGuardado = null;
+                cerrarModal();
+                renderizarVista(); 
+            }, 'bg-red-500 hover:bg-red-600 ml-2');
+
+            const divBotones = document.createElement('div');
+            divBotones.className = 'flex justify-center mt-4';
+            divBotones.appendChild(btnContinuar);
+            divBotones.appendChild(btnNuevo);
+            modalContent.appendChild(divBotones);
+        }
+        
+        async function limpiarProgreso(tipo, id) {
+            const key = tipo === 'tema' ? `topicProgress_${id}` : `examProgress_${id}`;
+            removeItem(key);
+            console.log(`Progreso de ${tipo} con ID ${id} eliminado.`);
+        }
+
+        function continuarCuestionario() {
+            const progreso = estadoActual.progresoGuardado;
+            estadoActual.modo = progreso.tipo;
+            if (progreso.tipo === 'tema') {
+                estadoActual.temaActual = progreso.temaId;
+                estadoActual.preguntasCuestionario = shuffleArray([...preguntasGlobal.filter(p => p.tema === estadoActual.temaActual)]);
+            } else { 
+                estadoActual.examenActualId = progreso.id || progreso.examId; 
+                if (progreso.questionsInExam && progreso.questionsInExam.length > 0) {
+                    estadoActual.preguntasCuestionario = progreso.questionsInExam.map(qId => preguntasGlobal.find(p => p.id === qId)).filter(p => p);
+                } else {
+                    iniciarExamenFinal(true); 
+                    return;
+                }
+            }
+            estadoActual.preguntaActualIdx = progreso.currentQuestionIndex || 0;
+            estadoActual.respuestasUsuario = progreso.userAnswers || [];
+            estadoActual.puntuacion = progreso.score || 0;
+            estadoActual.vista = 'cuestionario';
+            renderizarVista();
+        }
+
+        function renderizarInicio() {
+            // Definir el HTML base
+            appContainer.innerHTML = `
+                <div class="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white flex flex-col items-center justify-center p-6 font-inter">
+                    <div class="bg-slate-800 p-8 sm:p-12 rounded-xl shadow-2xl text-center max-w-2xl w-full transform transition-all hover:scale-105 duration-300">
+                        <h1 class="text-4xl sm:text-5xl font-bold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Plataforma de Estudio Interactivo</h1>
+                        <p class="text-slate-300 mb-10 text-lg">Prepárate para tus exámenes de Riesgos Bancarios. Elige una opción para comenzar:</p>
+                        <div id="botonesInicioContainer" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            </div>
+                    </div>
+                </div>
+            `;
+
+            // Obtener el contenedor de botones
+            const botonesContainer = document.getElementById('botonesInicioContainer');
+            if (botonesContainer) {
+                // Crear y añadir botones programáticamente
+                const btnRepasarTema = crearBoton('Repasar por Tema', () => { estadoActual.vista = 'seleccionTema'; renderizarVista(); }, 'w-full text-lg');
+                const btnExamenFinal = crearBoton('Hacer Examen Final', () => iniciarExamenFinal(false), 'w-full text-lg');
+                const btnRevisarFallos = crearBoton('Revisar Preguntas Falladas', iniciarRevisionFallos, 'w-full text-lg');
+
+                botonesContainer.appendChild(btnRepasarTema);
+                botonesContainer.appendChild(btnExamenFinal);
+                botonesContainer.appendChild(btnRevisarFallos);
+            } else {
+                console.error("El contenedor de botones 'botonesInicioContainer' no se encontró.");
+            }
+        }
+
+
+        function renderizarSeleccionTema() {
+            const temasUnicos = [...new Set(preguntasGlobal.map(p => p.tema))].sort((a,b) => a-b);
+            
+            appContainer.innerHTML = `
+                <div class="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-6 font-inter text-white">
+                    <div class="bg-slate-800 p-8 sm:p-10 rounded-xl shadow-xl max-w-lg w-full">
+                        <h2 class="text-3xl font-bold mb-8 text-center text-sky-400">Selecciona un Tema para Repasar</h2>
+                        <div id="botonesTemaContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                            </div>
+                        <div id="botonVolverContainer">
+                            </div>
+                    </div>
+                </div>
+            `;
+
+            const botonesTemaContainer = document.getElementById('botonesTemaContainer');
+            if (botonesTemaContainer) {
+                temasUnicos.forEach(numTema => {
+                    const nombreTema = TEMAS_NOMBRES[numTema - 1] || `Tema ${numTema}`;
+                    const botonTema = crearBoton(nombreTema, () => iniciarCuestionarioTema(numTema, false), 'w-full bg-sky-600 hover:bg-sky-700');
+                    botonesTemaContainer.appendChild(botonTema);
+                });
+            }
+
+            const botonVolverContainer = document.getElementById('botonVolverContainer');
+            if (botonVolverContainer) {
+                 const botonVolver = crearBoton('Volver al Inicio', () => { estadoActual.vista = 'inicio'; renderizarVista(); }, 'w-full mt-4 bg-slate-600 hover:bg-slate-700');
+                 botonVolverContainer.appendChild(botonVolver);
+            }
+        }
+        
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        async function iniciarCuestionarioTema(numTema, omitirVerificacionProgreso = false) {
+            estadoActual.modo = 'tema';
+            estadoActual.temaActual = numTema;
+            
+            if (!omitirVerificacionProgreso) {
+                const progresoGuardado = getItem(`topicProgress_${numTema}`);
+                if (progresoGuardado && progresoGuardado.currentQuestionIndex > 0 && !progresoGuardado.completed) {
+                    estadoActual.progresoGuardado = { ...progresoGuardado, temaId: numTema, tipo: 'tema', id: String(numTema) };
+                    mostrarModalContinuar();
+                    return; 
+                }
+            }
+            
+            estadoActual.preguntasCuestionario = shuffleArray([...preguntasGlobal.filter(p => p.tema === numTema)]);
+            estadoActual.preguntaActualIdx = 0;
+            estadoActual.respuestasUsuario = [];
+            estadoActual.puntuacion = 0;
+            estadoActual.vista = 'cuestionario';
+            renderizarVista();
+        }
+
+        async function iniciarExamenFinal(omitirVerificacionProgreso = false) {
+            estadoActual.modo = 'examen';
+            
+            if (!omitirVerificacionProgreso) {
+                const examKeys = Object.keys(localStorage).filter(k => k.startsWith(`${appId}_examProgress_`));
+                let examenEnCurso = null;
+                for (const key of examKeys) {
+                    const progreso = getItem(key.substring(appId.length + 1));
+                    if (progreso && !progreso.completed && progreso.currentQuestionIndex > 0) {
+                         if (!examenEnCurso || new Date(progreso.lastAccessed) > new Date(examenEnCurso.lastAccessed)) {
+                            examenEnCurso = {...progreso, id: key.substring(appId.length + 1 + "examProgress_".length), tipo: 'examen'};
+                        }
+                    }
+                }
+                if (examenEnCurso) {
+                    estadoActual.progresoGuardado = examenEnCurso;
+                    mostrarModalContinuar();
+                    return;
+                }
+            }
+
+            let preguntasExamen = [];
+            const preguntasPorTema = {};
+            preguntasGlobal.forEach(p => {
+                if (!preguntasPorTema[p.tema]) preguntasPorTema[p.tema] = [];
+                preguntasPorTema[p.tema].push(p);
+            });
+
+            for (let i = 1; i <= 10; i++) { 
+                if (preguntasPorTema[i]) {
+                    const temaPreguntas = shuffleArray([...preguntasPorTema[i]]);
+                    preguntasExamen.push(...temaPreguntas.slice(0, 10)); 
+                }
+            }
+            estadoActual.preguntasCuestionario = shuffleArray(preguntasExamen.slice(0,100)); 
+            estadoActual.preguntaActualIdx = 0;
+            estadoActual.respuestasUsuario = [];
+            estadoActual.puntuacion = 0;
+            estadoActual.examenActualId = `examen_${Date.now()}`; 
+            estadoActual.vista = 'cuestionario';
+            renderizarVista();
+        }
+        
+        async function iniciarRevisionFallos() {
+            const idsFalladas = getItem('failedQuestions') || [];
+            const preguntasFalladasCargadas = preguntasGlobal.filter(p => idsFalladas.includes(p.id));
+            
+            if (preguntasFalladasCargadas.length === 0) {
+                mostrarMensaje("¡Felicidades! No tienes preguntas falladas para revisar.", "info");
+                estadoActual.vista = 'inicio';
+                renderizarVista();
+                return;
+            }
+            estadoActual.preguntasCuestionario = shuffleArray(preguntasFalladasCargadas).map(p => {
+                 const opcionCorrecta = p.opciones.find(op => op.esCorrecta);
+                 return {...p, respuestaCorrectaTexto: opcionCorrecta ? opcionCorrecta.texto : "No disponible"};
+            });
+            estadoActual.modo = 'revision';
+            estadoActual.preguntaActualIdx = 0;
+            estadoActual.respuestasUsuario = []; 
+            estadoActual.puntuacion = 0;
+            estadoActual.vista = 'cuestionario'; 
+            renderizarVista();
+        }
+
+        function renderizarCuestionario() {
+            if (estadoActual.preguntasCuestionario.length === 0 && estadoActual.modo !== 'revision') {
+                appContainer.innerHTML = `
+                <div class="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-6 text-white font-inter">
+                    <div class="bg-slate-800 p-8 sm:p-10 rounded-xl shadow-xl text-center">
+                        <h2 class="text-2xl font-bold mb-6">${estadoActual.modo === 'tema' ? TEMAS_NOMBRES[estadoActual.temaActual - 1] : 'Examen Final'}</h2>
+                        <p class="mb-6">No hay preguntas disponibles para este ${estadoActual.modo}.</p>
+                    </div>
+                </div>`;
+                // Añadir botón de volver al inicio si no hay preguntas
+                const btnVolver = crearBoton('Volver al Inicio', () => { estadoActual.vista = 'inicio'; renderizarVista(); }, 'w-full mt-4');
+                appContainer.querySelector('.bg-slate-800').appendChild(btnVolver); // Asegurarse que el contenedor existe
+                return;
+            }
+             if (estadoActual.preguntasCuestionario.length === 0 && estadoActual.modo === 'revision') {
+                mostrarMensaje("No hay preguntas falladas para revisar.", "info");
+                estadoActual.vista = 'inicio';
+                renderizarVista();
+                return;
+            }
+
+            const pregunta = estadoActual.preguntasCuestionario[estadoActual.preguntaActualIdx];
+            const opcionesOriginales = pregunta.opciones;
+            const opcionesBarajadas = shuffleArray([...pregunta.opciones]); 
+
+            const tituloCuestionario = estadoActual.modo === 'revision' ? 'Revisión de Fallos' : (estadoActual.modo === 'tema' ? TEMAS_NOMBRES[estadoActual.temaActual - 1] : 'Examen Final');
+
+            appContainer.innerHTML = `
+                <div class="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white flex flex-col items-center justify-center p-4 sm:p-6 font-inter">
+                    <div class="bg-slate-800 p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-2xl">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-xl sm:text-2xl font-semibold text-blue-400">${tituloCuestionario}</h2>
+                            <span class="text-sm text-slate-400">Pregunta ${estadoActual.preguntaActualIdx + 1} de ${estadoActual.preguntasCuestionario.length}</span>
+                        </div>
+                        <div class="bg-slate-700 p-5 rounded-lg mb-6 min-h-[60px]">
+                            <p class="text-lg sm:text-xl leading-relaxed">${pregunta.texto}</p>
+                        </div>
+                        <div id="opcionesCuestionarioContainer" class="mb-8">
+                            </div>
+                        <div id="botonesCuestionarioContainer" class="flex flex-col sm:flex-row justify-between items-center gap-3">
+                            </div>
+                        <div id="respuestaCorrectaContainer" class="mt-4">
+                           </div>
+                    </div>
+                </div>
+            `;
+
+            const opcionesContainer = document.getElementById('opcionesCuestionarioContainer');
+            opcionesBarajadas.forEach((op) => {
+                const indiceOriginal = opcionesOriginales.findIndex(o => o.texto === op.texto);
+                const label = document.createElement('label');
+                label.className = "block bg-slate-700 hover:bg-slate-600 p-4 rounded-lg cursor-pointer transition duration-150 mb-3 has-[:checked]:bg-blue-500 has-[:checked]:ring-2 has-[:checked]:ring-blue-300";
+                const input = document.createElement('input');
+                input.type = "radio";
+                input.name = "opcion";
+                input.value = indiceOriginal;
+                input.className = "sr-only peer";
+                const span = document.createElement('span');
+                span.className = "text-slate-200 peer-checked:text-white";
+                span.textContent = op.texto;
+                label.appendChild(input);
+                label.appendChild(span);
+                opcionesContainer.appendChild(label);
+            });
+            
+            const botonesCuestionarioContainer = document.getElementById('botonesCuestionarioContainer');
+            const btnSiguiente = crearBoton(estadoActual.modo === 'revision' ? 'Siguiente Fallo' : 'Saltar / Siguiente', manejarSiguientePregunta, 'w-full sm:w-auto');
+            botonesCuestionarioContainer.appendChild(btnSiguiente);
+
+            if (estadoActual.modo !== 'revision') {
+                const btnTerminarCuestionario = crearBoton('Terminar Cuestionario', () => { estadoActual.vista = 'resultados'; renderizarResultados(); }, 'w-full sm:w-auto bg-red-600 hover:bg-red-700');
+                botonesCuestionarioContainer.appendChild(btnTerminarCuestionario);
+            } else {
+                const btnTerminarRevision = crearBoton('Terminar Revisión', () => { estadoActual.vista = 'inicio'; renderizarVista(); }, 'w-full sm:w-auto bg-green-600 hover:bg-green-700');
+                botonesCuestionarioContainer.appendChild(btnTerminarRevision);
+            }
+            
+            if (estadoActual.modo === 'revision' && pregunta.respuestaCorrectaTexto) {
+                const respuestaCorrectaContainer = document.getElementById('respuestaCorrectaContainer');
+                respuestaCorrectaContainer.innerHTML = `<div class="p-3 bg-green-800 border border-green-600 rounded-lg text-sm text-green-200"><strong>Respuesta Correcta:</strong> ${pregunta.respuestaCorrectaTexto}</div>`;
+            }
+            
+            const respuestaGuardada = estadoActual.respuestasUsuario.find(r => r.questionId === pregunta.id);
+            if (respuestaGuardada) {
+                const radioInput = appContainer.querySelector(`input[name="opcion"][value="${respuestaGuardada.selectedOptionIndex}"]`);
+                if (radioInput) radioInput.checked = true;
+            }
+        }
+        
+        async function manejarSiguientePregunta() {
+            const preguntaActual = estadoActual.preguntasCuestionario[estadoActual.preguntaActualIdx];
+            const opcionSeleccionadaInput = document.querySelector('input[name="opcion"]:checked');
+            
+            if (estadoActual.modo !== 'revision' && opcionSeleccionadaInput) {
+                const opcionIdxOriginal = parseInt(opcionSeleccionadaInput.value); 
+                const esCorrecta = preguntaActual.opciones[opcionIdxOriginal].esCorrecta;
+                const respuestaExistenteIdx = estadoActual.respuestasUsuario.findIndex(r => r.questionId === preguntaActual.id);
+                if (respuestaExistenteIdx > -1) {
+                    estadoActual.respuestasUsuario[respuestaExistenteIdx] = { questionId: preguntaActual.id, selectedOptionIndex: opcionIdxOriginal, isCorrect: esCorrecta };
+                } else {
+                    estadoActual.respuestasUsuario.push({ questionId: preguntaActual.id, selectedOptionIndex: opcionIdxOriginal, isCorrect: esCorrecta });
+                }
+                if (esCorrecta) {
+                    await quitarDeFalladas(preguntaActual.id);
+                } else {
+                    await anadirAFalladas(preguntaActual);
+                }
+            } else if (estadoActual.modo !== 'revision' && !opcionSeleccionadaInput) {
+                 await anadirAFalladas(preguntaActual); 
+            }
+            estadoActual.preguntaActualIdx++;
+            if (estadoActual.modo !== 'revision') {
+                await guardarProgresoLocalStorage();
+            }
+            if (estadoActual.preguntaActualIdx < estadoActual.preguntasCuestionario.length) {
+                if (estadoActual.modo === 'examen' && estadoActual.preguntaActualIdx % 20 === 0 && estadoActual.preguntaActualIdx > 0) {
+                    mostrarEstadisticasParcialesExamen(); 
+                } else {
+                    renderizarCuestionario();
+                }
+            } else {
+                estadoActual.vista = 'resultados';
+                renderizarResultados();
+            }
+        }
+        
+        async function guardarProgresoLocalStorage() {
+            const ahora = new Date().toISOString();
+            if (estadoActual.modo === 'tema') {
+                const key = `topicProgress_${estadoActual.temaActual}`;
+                const progreso = {
+                    temaId: estadoActual.temaActual,
+                    currentQuestionIndex: estadoActual.preguntaActualIdx,
+                    userAnswers: estadoActual.respuestasUsuario,
+                    score: calcularPuntuacion(),
+                    completed: estadoActual.preguntaActualIdx >= estadoActual.preguntasCuestionario.length,
+                    lastAccessed: ahora 
+                };
+                setItem(key, progreso);
+            } else if (estadoActual.modo === 'examen') {
+                const key = `examProgress_${estadoActual.examenActualId}`;
+                const progreso = {
+                    examId: estadoActual.examenActualId,
+                    currentQuestionIndex: estadoActual.preguntaActualIdx,
+                    userAnswers: estadoActual.respuestasUsuario,
+                    score: calcularPuntuacion(),
+                    questionsInExam: estadoActual.preguntasCuestionario.map(p => p.id),
+                    completed: estadoActual.preguntaActualIdx >= estadoActual.preguntasCuestionario.length,
+                    lastAccessed: ahora
+                };
+                setItem(key, progreso);
+            }
+        }
+
+        function calcularPuntuacion() {
+            return estadoActual.respuestasUsuario.filter(r => r.isCorrect).length;
+        }
+        
+        function mostrarEstadisticasParcialesExamen() {
+            const totalRespondidas = estadoActual.preguntaActualIdx;
+            const respondidasEnEsteBloque = estadoActual.respuestasUsuario.slice(Math.max(0, totalRespondidas - 20), totalRespondidas);
+            const correctasEnEsteBloque = respondidasEnEsteBloque.filter(r => r.isCorrect).length;
+            const numPreguntasBloque = respondidasEnEsteBloque.length; 
+            
+            const modalContent = crearContenedorModal("Estadísticas Parciales del Examen");
+            const texto = document.createElement('p');
+            texto.className = 'text-gray-700 mb-4 text-lg text-left';
+            texto.innerHTML = `Has completado ${totalRespondidas} de ${estadoActual.preguntasCuestionario.length} preguntas.<br>
+                               En las últimas ${numPreguntasBloque} preguntas:<br>
+                               Aciertos: ${correctasEnEsteBloque} de ${numPreguntasBloque}.<br>
+                               Porcentaje: ${numPreguntasBloque > 0 ? ((correctasEnEsteBloque / numPreguntasBloque) * 100).toFixed(1) : 0}%`;
+            modalContent.appendChild(texto);
+            const btnContinuar = crearBoton('Continuar Examen', () => {
+                cerrarModal();
+                renderizarCuestionario(); 
+            }, 'w-full mt-4');
+            modalContent.appendChild(btnContinuar);
+        }
+
+        async function renderizarResultados() {
+            if (estadoActual.modo === 'revision') { 
+                estadoActual.vista = 'inicio';
+                renderizarVista();
+                return;
+            }
+            const puntuacionFinal = calcularPuntuacion();
+            const totalPreguntas = estadoActual.preguntasCuestionario.length;
+            const porcentaje = totalPreguntas > 0 ? (puntuacionFinal / totalPreguntas * 100).toFixed(1) : 0;
+            
+            const ahora = new Date().toISOString();
+            if (estadoActual.modo === 'tema') {
+                setItem(`topicProgress_${estadoActual.temaActual}`, { 
+                    ...getItem(`topicProgress_${estadoActual.temaActual}`), 
+                    score: puntuacionFinal, 
+                    completed: true, 
+                    userAnswers: estadoActual.respuestasUsuario, 
+                    lastAccessed: ahora,
+                    currentQuestionIndex: estadoActual.preguntaActualIdx 
+                });
+            } else if (estadoActual.modo === 'examen') {
+                 setItem(`examProgress_${estadoActual.examenActualId}`, { 
+                    ...getItem(`examProgress_${estadoActual.examenActualId}`),
+                    score: puntuacionFinal, 
+                    completed: true, 
+                    userAnswers: estadoActual.respuestasUsuario,
+                    lastAccessed: ahora,
+                    currentQuestionIndex: estadoActual.preguntaActualIdx 
+                });
+            }
+            
+            const tituloResultados = estadoActual.modo === 'tema' ? `Resultados: ${TEMAS_NOMBRES[estadoActual.temaActual - 1]}` : 'Resultados del Examen Final';
+            
+            appContainer.innerHTML = `
+                <div class="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white flex flex-col items-center justify-center p-6 font-inter">
+                    <div class="bg-slate-800 p-8 sm:p-12 rounded-xl shadow-2xl text-center max-w-md w-full">
+                        <h2 class="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500">${tituloResultados}</h2>
+                        <p class="text-xl mb-2">Tu puntuación: <span class="font-bold text-yellow-400">${puntuacionFinal} / ${totalPreguntas}</span></p>
+                        <p class="text-xl mb-8">Porcentaje de aciertos: <span class="font-bold text-yellow-400">${porcentaje}%</span></p>
+                        <div id="botonesResultadosContainer" class="space-y-4">
+                            </div>
+                    </div>
+                </div>
+            `;
+
+            const botonesResultadosContainer = document.getElementById('botonesResultadosContainer');
+            if (botonesResultadosContainer) {
+                const btnRevisarFallosCuestionario = crearBoton('Revisar Fallos de Este Cuestionario', mostrarFallosDelCuestionario, 'w-full bg-orange-500 hover:bg-orange-600');
+                const btnVolverInicio = crearBoton('Volver al Inicio', () => { estadoActual.vista = 'inicio'; renderizarVista(); }, 'w-full');
+                botonesResultadosContainer.appendChild(btnRevisarFallosCuestionario);
+                botonesResultadosContainer.appendChild(btnVolverInicio);
+            }
+        }
+        
+        function mostrarFallosDelCuestionario() {
+            const falladasEsteCuestionario = estadoActual.respuestasUsuario
+                .filter(r => !r.isCorrect)
+                .map(r => r.questionId);
+            const preguntasParaRevisar = preguntasGlobal.filter(p => falladasEsteCuestionario.includes(p.id));
+            if (preguntasParaRevisar.length === 0) {
+                mostrarMensaje("¡No tuviste errores en este cuestionario!", "info");
+                return;
+            }
+            estadoActual.preguntasCuestionario = shuffleArray(preguntasParaRevisar).map(p => {
+                const opcionCorrecta = p.opciones.find(op => op.esCorrecta);
+                return {...p, respuestaCorrectaTexto: opcionCorrecta ? opcionCorrecta.texto : "No disponible"};
+            });
+            estadoActual.modo = 'revision'; 
+            estadoActual.preguntaActualIdx = 0;
+            estadoActual.vista = 'cuestionario';
+            renderizarVista();
+        }
+
+        async function anadirAFalladas(pregunta) {
+            if (!pregunta || !pregunta.id) return;
+            let idsFalladas = getItem('failedQuestions') || [];
+            if (!idsFalladas.includes(pregunta.id)) {
+                idsFalladas.push(pregunta.id);
+                setItem('failedQuestions', idsFalladas);
+            }
+        }
+
+        async function quitarDeFalladas(questionId) {
+            if (!questionId) return;
+            let idsFalladas = getItem('failedQuestions') || [];
+            idsFalladas = idsFalladas.filter(id => id !== questionId);
+            setItem('failedQuestions', idsFalladas);
+        }
+        
+        function mostrarMensaje(mensaje, tipo = 'info', duracion = 3000) {
+            const mensajeDiv = document.createElement('div');
+            mensajeDiv.textContent = mensaje;
+            let bgColorClass = 'bg-blue-500';
+            if (tipo === 'error') bgColorClass = 'bg-red-600';
+            if (tipo === 'success') bgColorClass = 'bg-green-600';
+            mensajeDiv.className = `fixed bottom-5 right-5 ${bgColorClass} text-white py-3 px-5 rounded-lg shadow-xl text-sm z-50 transform transition-all animate-toast-in`;
+            document.body.appendChild(mensajeDiv);
+            setTimeout(() => {
+                mensajeDiv.classList.remove('animate-toast-in');
+                mensajeDiv.classList.add('animate-toast-out');
+                setTimeout(() => mensajeDiv.remove(), 500);
+            }, duracion);
+        }
+
+        async function inicializarApp() {
+            await cargarPreguntas(); 
+            await verificarProgresoPrevio(); 
+        }
+        
+        const styleSheet = document.createElement("style");
+        styleSheet.type = "text/css";
+        styleSheet.innerText = `
+            @keyframes modal-appear {
+                from { transform: scale(0.95); opacity: 0; }
+                to { transform: scale(1); opacity: 1; }
+            }
+            .animate-modal-appear { animation: modal-appear 0.3s ease-out forwards; }
+            @keyframes toast-in {
+                from { transform: translateY(100%); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+            .animate-toast-in { animation: toast-in 0.5s ease-out forwards; }
+            @keyframes toast-out {
+                from { opacity: 1; }
+                to { opacity: 0; }
+            }
+            .animate-toast-out { animation: toast-out 0.5s ease-in forwards; }
+        `;
+        document.head.appendChild(styleSheet);
+
+        inicializarApp();
+
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-900">
+    <div id="app">
+        <div class="min-h-screen flex items-center justify-center text-white">Cargando aplicación...</div>
+    </div>
+</body>
+</html>
