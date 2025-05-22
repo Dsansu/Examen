@@ -98,16 +98,16 @@
         
         let estadoActual = {
             vista: 'inicio', 
-            modo: null, // 'tema', 'examen', 'revision' (cuestionario de todos los fallos), 'revision_especifica' (revisión post-cuestionario)
+            modo: null, 
             temaActual: null, 
             examenActualId: null, 
-            preguntasCuestionario: [], // Las preguntas de la sesión actual
-            preguntasCuestionarioRevisionEspecifica: [], // Para guardar las preguntas de la sesión que se quieren revisar
+            preguntasCuestionario: [], 
+            preguntasCuestionarioRevisionEspecifica: [], 
             preguntaActualIdx: 0,
-            respuestasUsuario: [], // Respuestas de la sesión actual
+            respuestasUsuario: [], 
             puntuacion: 0,
             progresoGuardado: null,
-            preguntaRespondidaEnSesion: false // Flag para la interactividad inmediata
+            preguntaRespondidaEnSesion: false 
         };
 
         const appContainer = document.getElementById('app');
@@ -137,7 +137,7 @@
 
         function renderizarVista() {
             appContainer.innerHTML = ''; 
-            estadoActual.preguntaRespondidaEnSesion = false; // Resetear al cambiar de vista/pregunta
+            estadoActual.preguntaRespondidaEnSesion = false; 
             switch (estadoActual.vista) {
                 case 'inicio':
                     renderizarInicio();
@@ -500,7 +500,6 @@
 
             const pregunta = estadoActual.preguntasCuestionario[estadoActual.preguntaActualIdx];
             const opcionesOriginales = pregunta.opciones;
-            // No barajar opciones si estamos en modo 'revision_especifica' para mantener consistencia con la respuesta original
             const opcionesAMostrar = estadoActual.modo === 'revision_especifica' ? opcionesOriginales : shuffleArray([...pregunta.opciones]); 
 
             const tituloCuestionario = estadoActual.modo === 'revision' 
@@ -527,21 +526,21 @@
             `;
 
             const opcionesContainer = document.getElementById('opcionesCuestionarioContainer');
-            opcionesAMostrar.forEach((op, idxEnBarajadas) => {
+            opcionesAMostrar.forEach((op) => { // No necesitamos idxEnBarajadas aquí
                 const indiceOriginal = opcionesOriginales.findIndex(o => o.texto === op.texto);
                 const label = document.createElement('label');
-                label.id = `opcion-label-${indiceOriginal}`; // ID para targeting
+                label.id = `opcion-label-${indiceOriginal}`; 
                 label.className = "block bg-slate-700 hover:bg-slate-600 p-4 rounded-lg cursor-pointer transition duration-150 mb-3";
                 const input = document.createElement('input');
                 input.type = "radio";
                 input.name = "opcion";
-                input.value = indiceOriginal; // Usar índice original para la lógica
+                input.value = indiceOriginal; 
                 input.className = "sr-only peer";
                 input.disabled = estadoActual.preguntaRespondidaEnSesion || estadoActual.modo === 'revision_especifica';
                 
-                input.onchange = () => { // Evento onchange para manejar el clic
+                input.onchange = () => { 
                     if (estadoActual.modo !== 'revision_especifica' && !estadoActual.preguntaRespondidaEnSesion) {
-                        manejarSeleccionOpcion(indiceOriginal, preguntaActual);
+                        manejarSeleccionOpcion(indiceOriginal, pregunta); // Pasamos 'pregunta' en lugar de 'preguntaActual'
                     }
                 };
 
@@ -559,51 +558,57 @@
             btnSiguiente.id = "btnSiguientePregunta";
             botonesCuestionarioContainer.appendChild(btnSiguiente);
 
-            if (estadoActual.modo !== 'revision_especifica') {
-                const btnTerminar = crearBoton('Terminar Cuestionario', () => { estadoActual.vista = 'resultados'; renderizarResultados(); }, 'w-full sm:w-auto bg-red-600 hover:bg-red-700');
+            // Ajuste para el botón de terminar en modo 'revision_especifica'
+            if (estadoActual.modo !== 'revision_especifica' || estadoActual.preguntaActualIdx < estadoActual.preguntasCuestionario.length - 1) {
+                const btnTerminarTexto = (estadoActual.modo === 'revision' || estadoActual.modo === 'revision_especifica') ? 'Terminar Revisión' : 'Terminar Cuestionario';
+                const btnTerminar = crearBoton(btnTerminarTexto, () => { 
+                    estadoActual.vista = 'resultados'; 
+                    renderizarResultados(); 
+                }, 'w-full sm:w-auto bg-red-600 hover:bg-red-700');
                 botonesCuestionarioContainer.appendChild(btnTerminar);
-            } else {
-                 const btnTerminarRevisionEspecifica = crearBoton('Terminar Revisión de Sesión', () => { estadoActual.vista = 'resultados'; renderizarResultados(); }, 'w-full sm:w-auto bg-green-600 hover:bg-green-700');
-                 if (estadoActual.preguntaActualIdx >= estadoActual.preguntasCuestionario.length -1) {
-                    // No mostrar "terminar" si es la última pregunta en revisión específica, solo "siguiente" que llevará a resultados
-                 } else {
-                    botonesCuestionarioContainer.appendChild(btnTerminarRevisionEspecifica);
-                 }
             }
             
             const respuestaCorrectaContainer = document.getElementById('respuestaCorrectaContainer');
             if (estadoActual.modo === 'revision_especifica' && pregunta.respuestaCorrectaTexto) {
                 respuestaCorrectaContainer.innerHTML = `<div class="p-3 bg-green-800 border border-green-600 rounded-lg text-green-200"><strong>Respuesta Correcta:</strong> ${pregunta.respuestaCorrectaTexto}</div>`;
-                // Marcar la opción correcta visualmente si estamos en revisión específica
                 const opcionCorrectaIdx = opcionesOriginales.findIndex(opt => opt.esCorrecta);
                 if (opcionCorrectaIdx !== -1) {
                     const labelCorrecta = document.getElementById(`opcion-label-${opcionCorrectaIdx}`);
                     if (labelCorrecta) labelCorrecta.classList.add('!bg-green-700', 'ring-2', 'ring-green-500');
                 }
+                 // También marcar la seleccionada por el usuario si fue incorrecta
+                const respuestaUsuario = estadoActual.respuestasUsuario.find(r => r.questionId === pregunta.id);
+                if (respuestaUsuario && !respuestaUsuario.isCorrect) {
+                    const labelSeleccionada = document.getElementById(`opcion-label-${respuestaUsuario.selectedOptionIndex}`);
+                    if (labelSeleccionada) {
+                        labelSeleccionada.classList.remove('bg-slate-700', 'hover:bg-slate-600');
+                        labelSeleccionada.classList.add('!bg-red-700', 'ring-2', 'ring-red-500');
+                    }
+                }
+
+
             } else {
                 respuestaCorrectaContainer.innerHTML = '';
             }
         }
 
-        async function manejarSeleccionOpcion(indiceOpcionSeleccionada, pregunta) {
-            if (estadoActual.preguntaRespondidaEnSesion) return; // Evitar múltiples procesamientos
+        async function manejarSeleccionOpcion(indiceOpcionSeleccionada, preguntaActualObj) { // Renombrado el parámetro
+            if (estadoActual.preguntaRespondidaEnSesion) return; 
             estadoActual.preguntaRespondidaEnSesion = true;
 
-            const esCorrecta = pregunta.opciones[indiceOpcionSeleccionada].esCorrecta;
-            const respuestaExistenteIdx = estadoActual.respuestasUsuario.findIndex(r => r.questionId === pregunta.id);
+            const esCorrecta = preguntaActualObj.opciones[indiceOpcionSeleccionada].esCorrecta;
+            const respuestaExistenteIdx = estadoActual.respuestasUsuario.findIndex(r => r.questionId === preguntaActualObj.id);
 
             if (respuestaExistenteIdx > -1) {
-                estadoActual.respuestasUsuario[respuestaExistenteIdx] = { questionId: pregunta.id, selectedOptionIndex: indiceOpcionSeleccionada, isCorrect: esCorrecta };
+                estadoActual.respuestasUsuario[respuestaExistenteIdx] = { questionId: preguntaActualObj.id, selectedOptionIndex: indiceOpcionSeleccionada, isCorrect: esCorrecta };
             } else {
-                estadoActual.respuestasUsuario.push({ questionId: pregunta.id, selectedOptionIndex: indiceOpcionSeleccionada, isCorrect: esCorrecta });
+                estadoActual.respuestasUsuario.push({ questionId: preguntaActualObj.id, selectedOptionIndex: indiceOpcionSeleccionada, isCorrect: esCorrecta });
             }
 
-            // Deshabilitar todas las opciones
             document.querySelectorAll('input[name="opcion"]').forEach(input => input.disabled = true);
 
-            // Resaltar selección
             const labelSeleccionada = document.getElementById(`opcion-label-${indiceOpcionSeleccionada}`);
-            const opcionCorrectaIdx = pregunta.opciones.findIndex(opt => opt.esCorrecta);
+            const opcionCorrectaIdx = preguntaActualObj.opciones.findIndex(opt => opt.esCorrecta);
             const labelCorrecta = document.getElementById(`opcion-label-${opcionCorrectaIdx}`);
 
             if (esCorrecta) {
@@ -611,7 +616,9 @@
                     labelSeleccionada.classList.remove('bg-slate-700', 'hover:bg-slate-600');
                     labelSeleccionada.classList.add('!bg-green-600', 'ring-2', 'ring-green-400');
                 }
-                await quitarDeFalladas(pregunta.id);
+                if (estadoActual.modo === 'revision') { // Solo quitar de fallos si estamos en el Cuestionario de Fallos
+                    await quitarDeFalladas(preguntaActualObj.id);
+                }
             } else {
                 if (labelSeleccionada) {
                     labelSeleccionada.classList.remove('bg-slate-700', 'hover:bg-slate-600');
@@ -621,29 +628,32 @@
                     labelCorrecta.classList.remove('bg-slate-700', 'hover:bg-slate-600');
                     labelCorrecta.classList.add('!bg-green-600', 'ring-2', 'ring-green-400');
                 }
-                await anadirAFalladas(pregunta);
+                 // Añadir a falladas si no es modo revisión_específica (en modo revisión ya está en la lista)
+                if (estadoActual.modo !== 'revision_especifica') {
+                    await anadirAFalladas(preguntaActualObj);
+                }
             }
             
-            // Cambiar texto del botón Siguiente
             const btnSiguiente = document.getElementById("btnSiguientePregunta");
             if(btnSiguiente) btnSiguiente.textContent = "Siguiente";
         }
         
         async function manejarSiguientePregunta() {
-            // Si no se ha respondido y se pulsa "Saltar / Siguiente"
             if (!estadoActual.preguntaRespondidaEnSesion && estadoActual.modo !== 'revision_especifica') {
-                const preguntaActual = estadoActual.preguntasCuestionario[estadoActual.preguntaActualIdx];
-                // Guardar como no respondida o incorrecta
-                const respuestaExistenteIdx = estadoActual.respuestasUsuario.findIndex(r => r.questionId === preguntaActual.id);
+                const preguntaActualObj = estadoActual.preguntasCuestionario[estadoActual.preguntaActualIdx];
+                const respuestaExistenteIdx = estadoActual.respuestasUsuario.findIndex(r => r.questionId === preguntaActualObj.id);
                 if (respuestaExistenteIdx > -1) {
-                    estadoActual.respuestasUsuario[respuestaExistenteIdx] = { questionId: preguntaActual.id, selectedOptionIndex: -1, isCorrect: false }; // -1 para indicar no respondida
+                    estadoActual.respuestasUsuario[respuestaExistenteIdx] = { questionId: preguntaActualObj.id, selectedOptionIndex: -1, isCorrect: false };
                 } else {
-                    estadoActual.respuestasUsuario.push({ questionId: preguntaActual.id, selectedOptionIndex: -1, isCorrect: false });
+                    estadoActual.respuestasUsuario.push({ questionId: preguntaActualObj.id, selectedOptionIndex: -1, isCorrect: false });
                 }
-                await anadirAFalladas(preguntaActual);
+                 // Añadir a falladas si no es modo revisión_específica (en modo revisión ya está en la lista)
+                if (estadoActual.modo !== 'revision_especifica') {
+                    await anadirAFalladas(preguntaActualObj);
+                }
             }
 
-            estadoActual.preguntaRespondidaEnSesion = false; // Resetear para la siguiente pregunta
+            estadoActual.preguntaRespondidaEnSesion = false; 
             estadoActual.preguntaActualIdx++;
             
             if (estadoActual.modo === 'tema' || estadoActual.modo === 'examen') {
@@ -738,12 +748,11 @@
                      keyToUpdate = `examProgress_${estadoActual.examenActualId}`;
                      dataToUpdate = { 
                         score: puntuacionFinal, completed: esCompletado, userAnswers: estadoActual.respuestasUsuario,
-                        questionsInExam: estadoActual.preguntasCuestionario.map(p => p.id), // Guardar las preguntas del examen
+                        questionsInExam: estadoActual.preguntasCuestionario.map(p => p.id), 
                         lastAccessed: ahora, currentQuestionIndex: estadoActual.preguntaActualIdx 
                     };
                 } else if (estadoActual.modo === 'revision') {
-                    // No se guarda progreso específico para el quiz de revisión, pero se podría si se quisiera
-                    // Por ahora, solo actualizamos la lista global de fallos, lo que ya se hizo en manejarSiguientePregunta
+                    // El quiz de revisión ya actualizó la lista global de fallos.
                 }
                 if (keyToUpdate && dataToUpdate) {
                     const progresoExistente = getItem(keyToUpdate) || {};
@@ -773,7 +782,7 @@
 
             const botonesResultadosContainer = document.getElementById('botonesResultadosContainer');
             if (botonesResultadosContainer) {
-                if (totalPreguntas > 0) { // Solo mostrar si hubo preguntas
+                if (totalPreguntas > 0) { 
                     const btnRevisarFallosSesion = crearBoton('Revisar Fallos de Esta Sesión', mostrarFallosDelCuestionarioActual, 'w-full bg-orange-500 hover:bg-orange-600');
                     botonesResultadosContainer.appendChild(btnRevisarFallosSesion);
                 }
@@ -787,7 +796,7 @@
                 .filter(r => !r.isCorrect)
                 .map(r => r.questionId);
             
-            const preguntasParaRevisar = estadoActual.preguntasCuestionario // Usar las preguntas del cuestionario actual
+            const preguntasParaRevisar = estadoActual.preguntasCuestionario 
                 .filter(p => falladasEsteCuestionario.includes(p.id))
                 .map(p => { 
                     const opcionCorrecta = p.opciones.find(op => op.esCorrecta);
@@ -799,10 +808,10 @@
                 return;
             }
             
-            estadoActual.preguntasCuestionarioRevisionEspecifica = preguntasParaRevisar; // Guardar para este modo específico
+            estadoActual.preguntasCuestionario = preguntasParaRevisar; // Cambiamos a las preguntas falladas de esta sesión
             estadoActual.modo = 'revision_especifica'; 
             estadoActual.preguntaActualIdx = 0;
-            // No reseteamos respuestasUsuario, ya que este modo es solo para ver, no para re-contestar
+            // No reseteamos respuestasUsuario aquí, ya que es solo para visualización
             estadoActual.vista = 'cuestionario';
             renderizarVista();
         }
